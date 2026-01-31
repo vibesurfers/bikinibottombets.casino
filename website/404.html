@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lost at Sea | Bikini Bottom Bets</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #0d1117;
+      --card: #161b22;
+      --green: #00d26a;
+      --glow: rgba(0, 210, 106, 0.4);
+      --red: #ff4444;
+      --gold: #ffd700;
+      --text: #e6edf3;
+      --muted: #7d8590;
+      --border: #30363d;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: radial-gradient(ellipse at bottom, rgba(0, 100, 150, 0.15) 0%, transparent 60%), var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Decorative elements */
+    .decor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.12;
+      filter: sepia(1) hue-rotate(100deg) saturate(3) brightness(0.6);
+    }
+
+    .palm-left {
+      left: -5%;
+      bottom: 0;
+      height: 80%;
+      transform: scaleX(-1);
+    }
+
+    .palm-right {
+      right: -5%;
+      bottom: 0;
+      height: 75%;
+    }
+
+    .moai-left {
+      left: 8%;
+      bottom: 10%;
+      height: 25%;
+      opacity: 0.08;
+    }
+
+    .moai-right {
+      right: 8%;
+      bottom: 10%;
+      height: 25%;
+      opacity: 0.08;
+      transform: scaleX(-1);
+    }
+
+    /* Bubbles */
+    .bubbles {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .bubble {
+      position: absolute;
+      bottom: -50px;
+      background: rgba(0, 210, 106, 0.1);
+      border-radius: 50%;
+      animation: rise linear infinite;
+    }
+
+    .bubble:nth-child(1) { left: 10%; width: 20px; height: 20px; animation-duration: 8s; animation-delay: 0s; }
+    .bubble:nth-child(2) { left: 25%; width: 15px; height: 15px; animation-duration: 10s; animation-delay: 1s; }
+    .bubble:nth-child(3) { left: 45%; width: 25px; height: 25px; animation-duration: 12s; animation-delay: 2s; }
+    .bubble:nth-child(4) { left: 70%; width: 18px; height: 18px; animation-duration: 9s; animation-delay: 0.5s; }
+    .bubble:nth-child(5) { left: 85%; width: 22px; height: 22px; animation-duration: 11s; animation-delay: 3s; }
+
+    @keyframes rise {
+      0% { transform: translateY(0) scale(1); opacity: 0.3; }
+      50% { opacity: 0.5; }
+      100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+    }
+
+    .container {
+      max-width: 550px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .lobster {
+      font-size: 6rem;
+      margin-bottom: 1rem;
+      animation: float 3s ease-in-out infinite;
+      filter: drop-shadow(0 0 30px var(--glow));
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-15px) rotate(3deg); }
+    }
+
+    .error-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: clamp(5rem, 15vw, 8rem);
+      font-weight: 800;
+      color: var(--red);
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 40px rgba(255, 68, 68, 0.4);
+    }
+
+    h1 {
+      font-size: clamp(1.3rem, 4vw, 1.8rem);
+      font-weight: 800;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-bottom: 2.5rem;
+      line-height: 1.7;
+      font-size: 1.05rem;
+    }
+
+    .subtitle span {
+      color: var(--gold);
+    }
+
+    .links {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    a {
+      display: inline-block;
+      padding: 0.9rem 1.8rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    a:hover {
+      transform: translateY(-3px);
+    }
+
+    .primary {
+      background: var(--green);
+      color: var(--bg);
+      box-shadow: 0 4px 20px rgba(0, 210, 106, 0.3);
+    }
+
+    .primary:hover {
+      box-shadow: 0 8px 30px rgba(0, 210, 106, 0.5);
+    }
+
+    .secondary {
+      background: var(--card);
+      color: var(--text);
+      border: 2px solid var(--border);
+    }
+
+    .secondary:hover {
+      border-color: var(--green);
+      box-shadow: 0 0 20px var(--glow);
+    }
+
+    .terminal {
+      margin-top: 3rem;
+      background: var(--card);
+      border: 2px solid var(--green);
+      border-radius: 10px;
+      padding: 1.2rem 2rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      color: var(--green);
+      box-shadow: 0 0 30px var(--glow);
+      display: inline-block;
+    }
+
+    .terminal::before {
+      content: '$ ';
+      color: var(--muted);
+    }
+
+    .footer {
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .footer a {
+      color: var(--green);
+      padding: 0;
+      background: none;
+      font-weight: 600;
+    }
+
+    .footer a:hover {
+      text-decoration: underline;
+      transform: none;
+    }
+
+    @media (max-width: 768px) {
+      .decor { display: none; }
+      .lobster { font-size: 4rem; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Bikini Bottom decorations -->
+  <img src="https://pngimg.com/uploads/palm_tree/palm_tree_PNG2485.png" class="decor palm-left" alt="">
+  <img src="https://pngimg.com/uploads/palm_tree/palm_tree_PNG2485.png" class="decor palm-right" alt="">
+  <img src="https://assets.stickpng.com/images/5c88c6efc115b30282adb620.png" class="decor moai-left" alt="">
+  <img src="https://assets.stickpng.com/images/5c88c6efc115b30282adb620.png" class="decor moai-right" alt="">
+
+  <!-- Underwater bubbles -->
+  <div class="bubbles">
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+  </div>
+
+  <div class="container">
+    <div class="lobster">🦞</div>
+    <div class="error-code">404</div>
+    <h1>Lost in Bikini Bottom</h1>
+    <p class="subtitle">
+      This page got <span>liquidated</span>. The shorts won this round.<br>
+      But the swarm never stops.
+    </p>
+    <div class="links">
+      <a href="/" class="primary">Back to Surface</a>
+      <a href="/vision" class="secondary">See the Vision</a>
+    </div>
+    <div class="terminal">npx openclaw install bikini-bottom-bets</div>
+    <p class="footer">
+      <a href="https://bikinibottombets.casino">bikinibottombets.casino</a>
+    </p>
+  </div>
+</body>
+</html>

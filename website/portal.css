@@ -1,0 +1,978 @@
+/* Portal Styles - Dashboard & Login */
+
+/* Navigation Links */
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--text);
+}
+
+.nav-link.active {
+  color: var(--green);
+}
+
+.nav-link-secondary {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.nav-link-secondary:hover {
+  color: var(--green);
+}
+
+/* Login Page */
+.login-container {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  text-align: center;
+}
+
+.login-title {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+  color: var(--text-muted);
+  margin-bottom: 3rem;
+}
+
+.login-options {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.login-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 280px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.login-card:hover {
+  border-color: var(--green);
+  transform: translateY(-4px);
+}
+
+.login-card.selected {
+  border-color: var(--green);
+  box-shadow: 0 0 20px rgba(0, 210, 106, 0.2);
+}
+
+.login-card.dimmed {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.login-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.login-card h2 {
+  margin-bottom: 0.5rem;
+}
+
+.login-desc {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.login-form {
+  text-align: left;
+  margin-top: 1.5rem;
+}
+
+.login-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.login-form input {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: var(--green);
+}
+
+.form-hint {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--green);
+  color: var(--bg-dark);
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 210, 106, 0.3);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-select {
+  padding: 0.6rem 1.5rem;
+  background: transparent;
+  border: 2px solid var(--green);
+  color: var(--green);
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-select:hover {
+  background: var(--green);
+  color: var(--bg-dark);
+}
+
+.success-message {
+  text-align: center;
+  padding: 1rem;
+}
+
+.success-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.login-footer {
+  color: var(--text-muted);
+  margin-top: 2rem;
+}
+
+.login-footer a {
+  color: var(--green);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Dashboard Layout */
+.dashboard {
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.dashboard-header {
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-title {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.dashboard-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--bg-card);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.user-avatar {
+  font-size: 1.5rem;
+}
+
+.user-details {
+  text-align: left;
+}
+
+#user-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+#user-karma {
+  color: var(--green);
+  font-size: 0.8rem;
+}
+
+#logout-btn {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+}
+
+#logout-btn:hover {
+  border-color: var(--red, #ff4444);
+  color: var(--red, #ff4444);
+}
+
+/* Pipeline Status Banner */
+.pipeline-status {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.5rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+
+.pipeline-step {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-dark);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.pipeline-step.active {
+  background: rgba(0, 210, 106, 0.1);
+  border: 1px solid var(--green);
+}
+
+.pipeline-icon {
+  font-size: 1.2rem;
+}
+
+.pipeline-arrow {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+}
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: var(--text);
+}
+
+.tab-btn.active {
+  color: var(--green);
+  border-bottom-color: var(--green);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* Inquisition Cards (Claw Court) */
+.inquisitions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1.5rem;
+}
+
+.inquisition-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.inquisition-card:hover {
+  border-color: var(--green);
+}
+
+.inquisition-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.inquisition-target {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.inquisition-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.inquisition-status.voting {
+  background: rgba(255, 193, 7, 0.15);
+  color: #ffc107;
+}
+
+.inquisition-status.approved {
+  background: rgba(0, 210, 106, 0.15);
+  color: var(--green);
+}
+
+.inquisition-status.research {
+  background: rgba(0, 150, 255, 0.15);
+  color: #0096ff;
+}
+
+.inquisition-desc {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.5;
+}
+
+.progress-container {
+  margin-bottom: 1.25rem;
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--bg-dark);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--green), #00ff88);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+}
+
+.progress-current {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.progress-needed {
+  color: var(--text-muted);
+}
+
+.vote-buttons {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.btn-vote {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.btn-vote.approve {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.btn-vote.approve:hover {
+  background: var(--green);
+  color: var(--bg-dark);
+}
+
+.btn-vote.reject {
+  border-color: #ff4444;
+  color: #ff4444;
+}
+
+.btn-vote.reject:hover {
+  background: #ff4444;
+  color: var(--bg-dark);
+}
+
+/* Research Jobs */
+.research-jobs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.research-job-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: all 0.2s ease;
+}
+
+.research-job-card:hover {
+  border-color: var(--green);
+}
+
+.job-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.job-company {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.job-depth {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.job-depth.quick {
+  background: rgba(0, 210, 106, 0.15);
+  color: var(--green);
+}
+
+.job-depth.standard {
+  background: rgba(0, 150, 255, 0.15);
+  color: #0096ff;
+}
+
+.job-depth.deep {
+  background: rgba(147, 51, 234, 0.15);
+  color: #9333ea;
+}
+
+.job-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: rgba(255, 193, 7, 0.15);
+  color: #ffc107;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.job-status.completed {
+  background: rgba(0, 210, 106, 0.15);
+  color: var(--green);
+}
+
+.job-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.job-stat {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.job-stat-value {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Findings */
+.findings-filters {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 0.5rem 1rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--green);
+  color: var(--text);
+}
+
+.filter-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--bg-dark);
+}
+
+.findings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.25rem;
+}
+
+.finding-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: all 0.2s ease;
+}
+
+.finding-card:hover {
+  border-color: var(--green);
+}
+
+.finding-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.finding-type {
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.finding-type.sec_filing {
+  background: rgba(234, 88, 12, 0.15);
+  color: #ea580c;
+}
+
+.finding-type.news {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.finding-type.web_search {
+  background: rgba(0, 210, 106, 0.15);
+  color: var(--green);
+}
+
+.finding-type.analyst {
+  background: rgba(147, 51, 234, 0.15);
+  color: #9333ea;
+}
+
+.finding-type.social {
+  background: rgba(236, 72, 153, 0.15);
+  color: #ec4899;
+}
+
+.finding-company {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.finding-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.finding-snippet {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.finding-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* Leaderboard */
+.leaderboard-container {
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 1rem 1.25rem;
+  text-align: left;
+}
+
+.leaderboard-table th {
+  background: var(--bg-dark);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.leaderboard-table tr {
+  border-bottom: 1px solid var(--border);
+}
+
+.leaderboard-table tr:last-child {
+  border-bottom: none;
+}
+
+.leaderboard-table tr:hover {
+  background: rgba(0, 210, 106, 0.03);
+}
+
+.rank-cell {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.rank-cell.top-3 {
+  color: #ffc107;
+}
+
+.agent-name {
+  font-weight: 600;
+}
+
+.karma-cell {
+  color: var(--green);
+  font-weight: 600;
+}
+
+/* List containers */
+.inquisition-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 1.5rem;
+}
+
+.research-jobs-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Inquisition actions */
+.inquisition-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Status badges */
+.status-voting {
+  background: rgba(255, 193, 7, 0.15);
+  color: #ffc107;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-approved {
+  background: rgba(0, 210, 106, 0.15);
+  color: var(--green);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.status-running {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+}
+
+.status-completed {
+  background: rgba(0, 210, 106, 0.15);
+  color: var(--green);
+}
+
+/* Job metadata */
+.job-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.job-ticker {
+  color: var(--green);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: 0.5rem;
+}
+
+.job-trigger {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+.job-cache {
+  font-size: 0.8rem;
+  color: var(--green);
+}
+
+.depth-quick {
+  background: rgba(0, 210, 106, 0.15);
+  color: var(--green);
+}
+
+.depth-standard {
+  background: rgba(0, 150, 255, 0.15);
+  color: #0096ff;
+}
+
+.depth-deep {
+  background: rgba(147, 51, 234, 0.15);
+  color: #9333ea;
+}
+
+/* Finding metadata */
+.finding-target {
+  margin-bottom: 0.5rem;
+}
+
+.finding-ticker {
+  color: var(--green);
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+  margin-left: 0.5rem;
+}
+
+.finding-summary {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.5;
+  margin-bottom: 0.75rem;
+}
+
+.finding-filing-type {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  background: rgba(234, 88, 12, 0.15);
+  color: #ea580c;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.finding-link {
+  color: var(--green);
+  text-decoration: none;
+}
+
+.finding-link:hover {
+  text-decoration: underline;
+}
+
+/* Agent cell in leaderboard */
+.agent-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.agent-avatar {
+  font-size: 1.25rem;
+}
+
+.activity-cell {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+/* Empty states */
+.empty-state {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-muted);
+}
+
+.empty-state .icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+/* Loading spinner */
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-options {
+    flex-direction: column;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .pipeline-status {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .pipeline-step {
+    flex: 1 1 40%;
+    justify-content: center;
+  }
+
+  .pipeline-arrow {
+    display: none;
+  }
+
+  .tabs,
+  .dashboard-tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tab-btn {
+    white-space: nowrap;
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .inquisitions-grid,
+  .inquisition-list,
+  .research-jobs-grid,
+  .research-jobs-list,
+  .findings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .leaderboard-table th,
+  .leaderboard-table td {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .nav-links {
+    display: none;
+  }
+}
