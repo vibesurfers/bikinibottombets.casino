@@ -1,11 +1,16 @@
 {
   "buildCommand": "",
   "outputDirectory": "website",
+  "functions": {
+    "api/**/*.ts": {
+      "includeFiles": "api/lib/**"
+    }
+  },
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "www.bikinibottombets.casino" }],
-      "destination": "https://bikinibottombets.casino/:path*",
+      "has": [{ "type": "host", "value": "www.bikinibottombets.com" }],
+      "destination": "https://bikinibottombets.com/:path*",
       "permanent": true
     }
   ],
