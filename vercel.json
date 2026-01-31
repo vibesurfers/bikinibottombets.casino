@@ -15,6 +15,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/skill.md", "destination": "/api/skill" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
   "headers": [

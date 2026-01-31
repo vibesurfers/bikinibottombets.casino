@@ -147,6 +147,30 @@ body {
   box-shadow: 0 4px 12px rgba(0, 210, 106, 0.3);
 }
 
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.nav-text {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav-text:hover,
+.nav-text.active {
+  color: var(--green);
+}
+
+.nav-brand {
+  color: inherit;
+  text-decoration: none;
+}
+
 /* Hero Section */
 .hero {
   min-height: 80vh;

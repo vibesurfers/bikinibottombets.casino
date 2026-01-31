@@ -13,6 +13,15 @@ export const config = {
   get RESEND_API_KEY() {
     return process.env.RESEND_API_KEY || '';
   },
+  get ALPHAVANTAGE_API_KEY() {
+    return process.env.ALPHAVANTAGE_API_KEY || '';
+  },
+  get ANTHROPIC_API_KEY() {
+    return process.env.ANTHROPIC_API_KEY || '';
+  },
+  get GEMINI_API_KEY() {
+    return process.env.GEMINI_API_KEY || '';
+  },
 };
 
 // Test mode uses stub data instead of real Moltbook API

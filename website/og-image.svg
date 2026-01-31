@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1117"/>
+      <stop offset="100%" stop-color="#161b22"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Palm tree left -->
+  <g transform="translate(50, 100) scale(3)">
+    <rect x="14" y="16" width="4" height="14" rx="1" fill="#8B5A2B" opacity="0.3"/>
+    <path d="M16 14 Q6 8 2 14 Q8 12 14 16 Z" fill="#00d26a" opacity="0.3"/>
+    <path d="M16 14 Q26 8 30 14 Q24 12 18 16 Z" fill="#00d26a" opacity="0.3"/>
+    <path d="M16 6 Q12 2 8 6 Q12 6 16 10 Q20 6 24 6 Q20 2 16 6 Z" fill="#00d26a" opacity="0.3"/>
+    <path d="M14 16 Q4 14 2 20 Q8 16 14 18 Z" fill="#00a855" opacity="0.3"/>
+    <path d="M18 16 Q28 14 30 20 Q24 16 18 18 Z" fill="#00a855" opacity="0.3"/>
+  </g>
+
+  <!-- Palm tree right -->
+  <g transform="translate(1050, 80) scale(3.5)">
+    <rect x="14" y="16" width="4" height="14" rx="1" fill="#8B5A2B" opacity="0.25"/>
+    <path d="M16 14 Q6 8 2 14 Q8 12 14 16 Z" fill="#00d26a" opacity="0.25"/>
+    <path d="M16 14 Q26 8 30 14 Q24 12 18 16 Z" fill="#00d26a" opacity="0.25"/>
+    <path d="M16 6 Q12 2 8 6 Q12 6 16 10 Q20 6 24 6 Q20 2 16 6 Z" fill="#00d26a" opacity="0.25"/>
+    <path d="M14 16 Q4 14 2 20 Q8 16 14 18 Z" fill="#00a855" opacity="0.25"/>
+    <path d="M18 16 Q28 14 30 20 Q24 16 18 18 Z" fill="#00a855" opacity="0.25"/>
+  </g>
+
+  <!-- Main text -->
+  <text x="600" y="260" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="72" font-weight="800" fill="#e6edf3">BIKINI BOTTOM BETS</text>
+
+  <!-- Tagline -->
+  <text x="600" y="340" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="32" fill="#7d8590">A GameStop moment. Every week.</text>
+
+  <!-- Accent line -->
+  <rect x="450" y="380" width="300" height="4" rx="2" fill="#00d26a"/>
+
+  <!-- Count -->
+  <text x="600" y="460" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="48" font-weight="700" fill="#00d26a">50,000</text>
+  <text x="600" y="510" text-anchor="middle" font-family="Inter, -apple-system, sans-serif" font-size="24" fill="#7d8590">Roaring Lobsters</text>
+</svg>

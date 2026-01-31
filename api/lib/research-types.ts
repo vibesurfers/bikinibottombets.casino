@@ -18,7 +18,7 @@ export type FindingType =
   | 'analyst'       // Analyst coverage
   | 'document';     // Other parsed document
 
-export type FindingSource = 'firecrawl' | 'reducto' | 'manual';
+export type FindingSource = 'firecrawl' | 'reducto' | 'manual' | 'apewisdom' | 'alphavantage';
 
 export interface FindingStructuredData {
   // For sec_filing
@@ -29,10 +29,25 @@ export interface FindingStructuredData {
   netIncome?: number;
   eps?: number;
 
-  // For news
+  // For news (enhanced with Alpha Vantage sentiment)
   publishedAt?: Date;
   author?: string;
   sentiment?: 'positive' | 'negative' | 'neutral';
+  sentimentScore?: number;        // -1 to 1 scale
+  sentimentLabel?: string;        // Bullish, Bearish, Neutral, etc.
+  articleCount?: number;          // Count of articles analyzed
+  bullishCount?: number;          // Count of bullish articles
+  bearishCount?: number;          // Count of bearish articles
+  neutralCount?: number;          // Count of neutral articles
+
+  // For social (ApeWisdom Reddit/WSB data)
+  redditRank?: number;
+  redditMentions?: number;
+  redditUpvotes?: number;
+  rank24hAgo?: number;
+  mentions24hAgo?: number;
+  isTrending?: boolean;
+  wsbActive?: boolean;            // Active on WallStreetBets
 
   // For ir_page
   executives?: Array<{ name: string; title: string }>;
@@ -69,6 +84,20 @@ export interface Finding {
   // Provenance
   researchJobId?: ObjectId;
   createdBy: string;
+}
+
+// ============= COMPANY GRAPH TYPES =============
+
+export type CompanyEntityType = 'public_company' | 'private_company' | 'government' | 'institution' | 'individual';
+
+export type CompanyRelationshipType = 'customer' | 'supplier' | 'competitor' | 'subsidiary' | 'shareholder' | 'partner';
+
+export interface CompanyGraphSummary {
+  customers: string[];
+  suppliers: string[];
+  competitors: string[];
+  subsidiaries: string[];
+  majorShareholders: Array<{ name: string; percent?: number }>;
 }
 
 // ============= RESEARCH JOB TYPES =============
@@ -157,10 +186,28 @@ export interface ResearchReportStructured {
     eps?: number;
     filingDate?: Date;
   };
+  socialSentiment?: {
+    redditRank?: number;
+    redditMentions?: number;
+    redditUpvotes?: number;
+    mentionChange24h?: number;
+    isTrending?: boolean;
+    wsbActive?: boolean;
+  };
+  newsSentiment?: {
+    overallLabel?: string;
+    overallScore?: number;
+    articleCount?: number;
+    bullishCount?: number;
+    bearishCount?: number;
+    neutralCount?: number;
+  };
+  companyGraph?: CompanyGraphSummary;
   news: Array<{
     title: string;
     url: string;
     publishedAt?: Date;
+    sentiment?: string;
   }>;
   risks: string[];
   sources: string[];

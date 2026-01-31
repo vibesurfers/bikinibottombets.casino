@@ -7,7 +7,7 @@
 
 import { ObjectId, Collection } from 'mongodb';
 import { connectToDatabase } from './db';
-import { scrapeUrl, searchWeb, parseDocument, ScrapeResult } from './services';
+import { scrapeUrl, searchWeb, searchAndScrape, parseDocument, ScrapeResult } from './services';
 import {
   getComprehensiveFilings,
   lookupCIK,
@@ -15,6 +15,8 @@ import {
   SECFiling,
   CompanyInfo,
 } from './sec-edgar';
+import { getSocialSentiment, ApeWisdomMention } from './apewisdom';
+import { getComprehensiveNewsSentiment, NewsArticle } from './alphavantage';
 import {
   Finding,
   FindingType,
@@ -31,7 +33,13 @@ import {
   calculateExpiresAt,
   getRequiredTypesForDepth,
   truncateContent,
+  CompanyGraphSummary,
 } from './research-types';
+import {
+  extractRelationshipsFromSECFilings,
+  generateRelationshipMarkdown,
+  getCompanyGraph,
+} from './company-graph';
 
 // ============= COLLECTION HELPERS =============
 
@@ -237,28 +245,46 @@ export async function executeResearch(
 
   const searchTarget = ticker || company || 'market';
 
-  // === QUICK & STANDARD & DEEP: Web search ===
+  // === QUICK: Fast search (titles/descriptions only) ===
+  // === STANDARD & DEEP: Full search + scrape for rich content ===
   try {
     const searchQuery = ticker
       ? `${company || ''} ${ticker} stock news analysis`
       : `${company} investor news analysis`;
 
-    const searchResults = await searchWeb(searchQuery, RESEARCH_CONFIG.LIMITS.searchResults);
+    if (depth === 'quick') {
+      // Quick: Just get search results (titles, descriptions)
+      const searchResults = await searchWeb(searchQuery, RESEARCH_CONFIG.LIMITS.searchResults);
+      await incrementApiCalls(jobsCollection, jobId, 'firecrawl');
+
+      results.push({
+        type: 'web_search',
+        source: 'firecrawl',
+        data: searchResults
+      });
+      return results;
+    }
+
+    // Standard/Deep: Search AND scrape for full page content
+    console.log(`[Firecrawl] Searching and scraping for "${searchQuery}"...`);
+    const scrapedResults = await searchAndScrape(searchQuery, RESEARCH_CONFIG.LIMITS.searchResults);
+    // Count API calls: 1 search + N scrapes
     await incrementApiCalls(jobsCollection, jobId, 'firecrawl');
+    for (let i = 0; i < scrapedResults.length; i++) {
+      await incrementApiCalls(jobsCollection, jobId, 'firecrawl');
+    }
 
     results.push({
       type: 'web_search',
       source: 'firecrawl',
-      data: searchResults
+      data: scrapedResults
     });
+
+    console.log(`[Firecrawl] ✓ Scraped ${scrapedResults.length} pages, avg ${Math.round(scrapedResults.reduce((sum, r) => sum + (r.markdown?.length || 0), 0) / scrapedResults.length)} chars`);
   } catch (error: any) {
     console.error('Search failed:', error.message);
     // Search is critical - rethrow
     throw error;
-  }
-
-  if (depth === 'quick') {
-    return results;
   }
 
   // === STANDARD & DEEP: IR page ===
@@ -285,16 +311,152 @@ export async function executeResearch(
   try {
     const today = new Date().toISOString().split('T')[0];
     const newsQuery = `"${company || ticker}" news ${today}`;
-    const newsResults = await searchWeb(newsQuery, RESEARCH_CONFIG.LIMITS.newsArticles);
-    await incrementApiCalls(jobsCollection, jobId, 'firecrawl');
 
-    results.push({
-      type: 'news',
-      source: 'firecrawl',
-      data: newsResults
-    });
+    if (depth === 'deep') {
+      // Deep: Scrape full articles
+      console.log(`[Firecrawl] Scraping news articles for "${newsQuery}"...`);
+      const newsResults = await searchAndScrape(newsQuery, RESEARCH_CONFIG.LIMITS.newsArticles);
+      await incrementApiCalls(jobsCollection, jobId, 'firecrawl');
+      for (let i = 0; i < newsResults.length; i++) {
+        await incrementApiCalls(jobsCollection, jobId, 'firecrawl');
+      }
+
+      results.push({
+        type: 'news',
+        source: 'firecrawl',
+        data: newsResults
+      });
+      console.log(`[Firecrawl] ✓ Scraped ${newsResults.length} news articles`);
+    } else {
+      // Standard: Just search results (faster)
+      const newsResults = await searchWeb(newsQuery, RESEARCH_CONFIG.LIMITS.newsArticles);
+      await incrementApiCalls(jobsCollection, jobId, 'firecrawl');
+
+      results.push({
+        type: 'news',
+        source: 'firecrawl',
+        data: newsResults
+      });
+    }
   } catch (error: any) {
     console.warn('News search failed, continuing:', error.message);
+  }
+
+  // === STANDARD & DEEP: Reddit/WSB Social Sentiment (ApeWisdom) ===
+  if (ticker) {
+    try {
+      console.log(`[ApeWisdom] Fetching Reddit sentiment for ${ticker}...`);
+      const socialData = await getSocialSentiment(ticker);
+
+      if (socialData.wsb || socialData.allStocks) {
+        const primary = socialData.wsb || socialData.allStocks!;
+        results.push({
+          type: 'social',
+          source: 'apewisdom',
+          sourceUrl: `https://apewisdom.io/stocks/${ticker}`,
+          metadata: {
+            dataType: 'reddit_sentiment',
+            wsbActive: !!socialData.wsb,
+            isTrending: socialData.momentum?.isTrending || false,
+          },
+          data: {
+            markdown: `# Reddit Social Sentiment: ${ticker}\n\n` +
+              `${socialData.summary}\n\n` +
+              `- **Rank**: #${primary.rank}\n` +
+              `- **Mentions**: ${primary.mentions}\n` +
+              `- **Upvotes**: ${primary.upvotes}\n` +
+              (socialData.momentum?.rankChange != null
+                ? `- **Rank Change (24h)**: ${socialData.momentum!.rankChange > 0 ? '+' : ''}${socialData.momentum!.rankChange}\n`
+                : '') +
+              (socialData.momentum?.mentionChangePercent != null
+                ? `- **Mention Change (24h)**: ${socialData.momentum!.mentionChangePercent > 0 ? '+' : ''}${socialData.momentum!.mentionChangePercent.toFixed(1)}%\n`
+                : '') +
+              (socialData.wsb ? '\n**Active on r/WallStreetBets**\n' : ''),
+            metadata: { title: `${ticker} Reddit Sentiment` },
+            structuredData: {
+              redditRank: primary.rank,
+              redditMentions: primary.mentions,
+              redditUpvotes: primary.upvotes,
+              rank24hAgo: primary.rank24hAgo,
+              mentions24hAgo: primary.mentions24hAgo,
+              isTrending: socialData.momentum?.isTrending || false,
+              wsbActive: !!socialData.wsb,
+            },
+          }
+        });
+        console.log(`[ApeWisdom] ✓ ${socialData.summary}`);
+      } else {
+        console.log(`[ApeWisdom] ${ticker} not trending on Reddit`);
+      }
+    } catch (error: any) {
+      console.warn('[ApeWisdom] Social sentiment failed, continuing:', error.message);
+    }
+  }
+
+  // === STANDARD & DEEP: Alpha Vantage News Sentiment ===
+  if (ticker) {
+    try {
+      console.log(`[Alpha Vantage] Fetching news sentiment for ${ticker}...`);
+      const newsData = await getComprehensiveNewsSentiment(ticker);
+
+      if (newsData.articles.length > 0) {
+        // Add individual articles as news findings with sentiment
+        for (const article of newsData.articles.slice(0, 5)) {
+          const tickerSentiment = article.tickerSentiment.find(
+            ts => ts.ticker.toUpperCase() === ticker.toUpperCase()
+          );
+
+          results.push({
+            type: 'news',
+            source: 'alphavantage',
+            sourceUrl: article.url,
+            metadata: {
+              dataType: 'news_with_sentiment',
+              sentimentScore: tickerSentiment?.sentimentScore || article.overallSentimentScore,
+              sentimentLabel: tickerSentiment?.sentimentLabel || article.overallSentimentLabel,
+            },
+            data: {
+              markdown: `# ${article.title}\n\n` +
+                `**Source**: ${article.source}\n` +
+                `**Published**: ${article.timePublished.toISOString()}\n` +
+                `**Sentiment**: ${tickerSentiment?.sentimentLabel || article.overallSentimentLabel} ` +
+                `(${(tickerSentiment?.sentimentScore || article.overallSentimentScore).toFixed(2)})\n\n` +
+                `${article.summary}\n`,
+              metadata: { title: article.title },
+            }
+          });
+        }
+
+        // Add sentiment summary
+        results.push({
+          type: 'analyst',
+          source: 'alphavantage',
+          sourceUrl: `https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=${ticker}`,
+          metadata: {
+            dataType: 'sentiment_summary',
+          },
+          data: {
+            markdown: `# ${ticker} News Sentiment Summary\n\n` +
+              `${newsData.formattedSummary}\n\n` +
+              `**Sources**: ${newsData.summary.sources.join(', ')}\n`,
+            metadata: { title: `${ticker} News Sentiment Summary` },
+            structuredData: {
+              sentimentScore: newsData.summary.averageSentiment,
+              sentimentLabel: newsData.summary.sentimentLabel,
+              articleCount: newsData.summary.articleCount,
+              bullishCount: newsData.summary.bullishCount,
+              bearishCount: newsData.summary.bearishCount,
+              neutralCount: newsData.summary.neutralCount,
+            },
+          }
+        });
+        console.log(`[Alpha Vantage] ✓ ${newsData.summary.articleCount} articles, sentiment: ${newsData.summary.sentimentLabel}`);
+      } else {
+        console.log(`[Alpha Vantage] No news articles found for ${ticker}`);
+      }
+    } catch (error: any) {
+      console.warn('[Alpha Vantage] News sentiment failed, continuing:', error.message);
+    }
   }
 
   if (depth === 'standard') {
@@ -512,6 +674,43 @@ export async function normalizeAndStore(
           raw.metadata || {},
           request
         )];
+      } else if (raw.source === 'apewisdom' || raw.source === 'alphavantage') {
+        // Direct structured data from ApeWisdom or Alpha Vantage
+        const data = raw.data as { markdown: string; metadata?: Record<string, unknown>; structuredData?: Record<string, unknown> };
+        const { content, truncated } = truncateContent(data.markdown || '', raw.type);
+
+        partialFindings = [{
+          company: request.company || request.ticker || 'Unknown',
+          ticker: request.ticker?.toUpperCase(),
+          findingType: raw.type,
+          source: raw.source,
+          title: (data.metadata?.title as string) || `${request.ticker} ${raw.type}`,
+          sourceUrl: raw.sourceUrl || '',
+          structuredData: {
+            ...data.structuredData,
+            ...(raw.metadata || {}),
+          },
+          rawContent: content,
+          rawContentTruncated: truncated,
+        }];
+      } else if (raw.source === 'manual') {
+        // Manual/document data (e.g., company info from SEC)
+        const data = raw.data as { markdown: string; metadata?: Record<string, unknown> };
+        const { content, truncated } = truncateContent(data.markdown || '', raw.type);
+
+        partialFindings = [{
+          company: request.company || request.ticker || 'Unknown',
+          ticker: request.ticker?.toUpperCase(),
+          findingType: raw.type,
+          source: raw.source,
+          title: (data.metadata?.title as string) || `${request.ticker} ${raw.type}`,
+          sourceUrl: raw.sourceUrl || '',
+          structuredData: {
+            ...(raw.metadata || {}),
+          },
+          rawContent: content,
+          rawContentTruncated: truncated,
+        }];
       }
 
       // Add common fields and store
@@ -583,6 +782,46 @@ export function generateMarkdown(findings: Finding[], request: ResearchRequest):
   }
   md += `\n`;
 
+  // === SOCIAL SENTIMENT (Reddit/WSB) ===
+  const socialFinding = findings.find(f => f.findingType === 'social' && f.source === 'apewisdom');
+  if (socialFinding) {
+    md += `### Social Sentiment (Reddit)\n\n`;
+    const sd = socialFinding.structuredData;
+    if (sd.redditRank) {
+      md += `| Metric | Value |\n|--------|-------|\n`;
+      md += `| Reddit Rank | #${sd.redditRank} |\n`;
+      if (sd.redditMentions) md += `| Mentions | ${sd.redditMentions} |\n`;
+      if (sd.redditUpvotes) md += `| Upvotes | ${sd.redditUpvotes} |\n`;
+      if (sd.mentions24hAgo && sd.redditMentions) {
+        const change = ((sd.redditMentions - sd.mentions24hAgo) / sd.mentions24hAgo * 100).toFixed(1);
+        md += `| 24h Change | ${parseFloat(change) > 0 ? '+' : ''}${change}% |\n`;
+      }
+      md += `\n`;
+      if (sd.isTrending) md += `**TRENDING** `;
+      if (sd.wsbActive) md += `*Active on r/WallStreetBets*`;
+      if (sd.isTrending || sd.wsbActive) md += `\n\n`;
+    }
+  }
+
+  // === NEWS SENTIMENT ===
+  const sentimentSummary = findings.find(f => f.source === 'alphavantage' && f.structuredData.sentimentLabel);
+  if (sentimentSummary) {
+    md += `### News Sentiment\n\n`;
+    const sd = sentimentSummary.structuredData;
+    md += `**Overall**: ${sd.sentimentLabel}`;
+    if (sd.sentimentScore !== undefined) {
+      md += ` (${(sd.sentimentScore as number).toFixed(2)})`;
+    }
+    md += `\n\n`;
+    if (sd.articleCount) {
+      md += `| Sentiment | Count |\n|-----------|-------|\n`;
+      md += `| Bullish | ${sd.bullishCount || 0} |\n`;
+      md += `| Neutral | ${sd.neutralCount || 0} |\n`;
+      md += `| Bearish | ${sd.bearishCount || 0} |\n`;
+      md += `\n*Based on ${sd.articleCount} articles*\n\n`;
+    }
+  }
+
   // === FINANCIALS (if available) ===
   const filing = findings.find(f => f.findingType === 'sec_filing');
   if (filing?.structuredData.revenue || filing?.structuredData.netIncome) {
@@ -608,7 +847,9 @@ export function generateMarkdown(findings: Finding[], request: ResearchRequest):
     for (const news of newsFindings.slice(0, 8)) {
       if (seen.has(news.sourceUrl)) continue;
       seen.add(news.sourceUrl);
-      md += `- [${news.title.substring(0, 80)}](${news.sourceUrl})\n`;
+      const sentiment = news.structuredData.sentimentLabel;
+      const sentimentBadge = sentiment ? ` [${sentiment}]` : '';
+      md += `- [${news.title.substring(0, 70)}](${news.sourceUrl})${sentimentBadge}\n`;
     }
     md += `\n`;
   }
@@ -632,11 +873,40 @@ export function generateMarkdown(findings: Finding[], request: ResearchRequest):
   return md;
 }
 
+export function generateMarkdownWithGraph(
+  findings: Finding[],
+  request: ResearchRequest,
+  companyGraph?: CompanyGraphSummary
+): string {
+  // Start with base markdown
+  let md = generateMarkdown(findings, request);
+
+  // Insert company relationships section before research stats
+  if (companyGraph && request.depth === 'deep') {
+    const graphMd = generateRelationshipMarkdown(
+      request.company || request.ticker || 'Unknown',
+      request.ticker || '',
+      companyGraph
+    );
+
+    // Insert before the final stats line
+    const statsIndex = md.lastIndexOf('---\n');
+    if (statsIndex > 0) {
+      md = md.slice(0, statsIndex) + graphMd + md.slice(statsIndex);
+    } else {
+      md += graphMd;
+    }
+  }
+
+  return md;
+}
+
 export function generateOutput(
   findings: Finding[],
   request: ResearchRequest,
   jobId: ObjectId,
-  cacheHit: boolean
+  cacheHit: boolean,
+  companyGraph?: CompanyGraphSummary
 ): ResearchReport {
   const structured: ResearchReportStructured = {
     company: request.company || request.ticker || 'Unknown',
@@ -675,10 +945,45 @@ export function generateOutput(
     };
   }
 
+  // Add social sentiment (Reddit/WSB from ApeWisdom)
+  const socialFinding = findings.find(f => f.findingType === 'social' && f.source === 'apewisdom');
+  if (socialFinding) {
+    const sd = socialFinding.structuredData;
+    structured.socialSentiment = {
+      redditRank: sd.redditRank,
+      redditMentions: sd.redditMentions,
+      redditUpvotes: sd.redditUpvotes,
+      mentionChange24h: sd.mentions24hAgo && sd.redditMentions
+        ? ((sd.redditMentions - sd.mentions24hAgo) / sd.mentions24hAgo) * 100
+        : undefined,
+      isTrending: sd.isTrending,
+      wsbActive: sd.wsbActive,
+    };
+  }
+
+  // Add news sentiment (from Alpha Vantage)
+  const sentimentSummary = findings.find(f => f.source === 'alphavantage' && f.structuredData.sentimentLabel);
+  if (sentimentSummary) {
+    const sd = sentimentSummary.structuredData;
+    structured.newsSentiment = {
+      overallLabel: sd.sentimentLabel as string,
+      overallScore: sd.sentimentScore as number,
+      articleCount: sd.articleCount as number,
+      bullishCount: sd.bullishCount as number,
+      bearishCount: sd.bearishCount as number,
+      neutralCount: sd.neutralCount as number,
+    };
+  }
+
+  // Add company graph if available
+  if (companyGraph) {
+    structured.companyGraph = companyGraph;
+  }
+
   return {
     jobId,
     structured,
-    markdown: generateMarkdown(findings, request),
+    markdown: generateMarkdownWithGraph(findings, request, companyGraph),
     findings,
   };
 }
@@ -739,6 +1044,24 @@ export async function research(
     if (!options.forceRefresh) {
       const cachedFindings = await checkCache(request);
       if (cachedFindings && cachedFindings.length > 0) {
+        // Try to load company graph from database for deep research
+        let cachedGraph: CompanyGraphSummary | undefined;
+        if (request.depth === 'deep' && request.ticker) {
+          const graph = await getCompanyGraph(request.ticker);
+          if (graph) {
+            cachedGraph = {
+              customers: graph.customers.map(c => c.entity.canonicalName),
+              suppliers: graph.suppliers.map(s => s.entity.canonicalName),
+              competitors: graph.competitors.map(c => c.entity.canonicalName),
+              subsidiaries: graph.subsidiaries.map(s => s.entity.canonicalName),
+              majorShareholders: graph.shareholders.map(s => ({
+                name: s.entity.canonicalName,
+                percent: s.relationship.metadata.ownershipPercent,
+              })),
+            };
+          }
+        }
+
         await jobsCollection.updateOne(
           { _id: jobId },
           {
@@ -750,7 +1073,7 @@ export async function research(
             }
           }
         );
-        return generateOutput(cachedFindings, request, jobId, true);
+        return generateOutput(cachedFindings, request, jobId, true, cachedGraph);
       }
     }
 
@@ -765,6 +1088,28 @@ export async function research(
       options.requestedBy || 'bot'
     );
 
+    // === STEP 6.5: Extract company relationships (deep research only) ===
+    let companyGraph: CompanyGraphSummary | undefined;
+    if (request.depth === 'deep' && request.ticker) {
+      try {
+        console.log(`[CompanyGraph] Extracting relationships for ${request.ticker}...`);
+        const graphResult = await extractRelationshipsFromSECFilings(
+          request.ticker,
+          request.company || request.ticker
+        );
+        companyGraph = {
+          customers: graphResult.summary.customers,
+          suppliers: graphResult.summary.suppliers,
+          competitors: graphResult.summary.competitors,
+          subsidiaries: graphResult.summary.subsidiaries,
+          majorShareholders: [], // Will be populated from 13F data if available
+        };
+        console.log(`[CompanyGraph] Extracted: ${graphResult.relationships.length} relationships`);
+      } catch (error: any) {
+        console.warn('[CompanyGraph] Relationship extraction failed:', error.message);
+      }
+    }
+
     // === STEP 7: Update job ===
     await jobsCollection.updateOne(
       { _id: jobId },
@@ -778,7 +1123,7 @@ export async function research(
     );
 
     // === STEP 8: Generate output ===
-    return generateOutput(findings, request, jobId, false);
+    return generateOutput(findings, request, jobId, false, companyGraph);
 
   } catch (error: any) {
     // Update job with error

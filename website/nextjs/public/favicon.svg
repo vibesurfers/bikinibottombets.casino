@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Bold palm tree icon optimized for favicon sizes -->
+  <!-- Trunk -->
+  <rect x="14" y="16" width="4" height="14" rx="1" fill="#8B5A2B"/>
+  <!-- Left frond -->
+  <path d="M16 14 Q6 8 2 14 Q8 12 14 16 Z" fill="#00d26a"/>
+  <!-- Right frond -->
+  <path d="M16 14 Q26 8 30 14 Q24 12 18 16 Z" fill="#00d26a"/>
+  <!-- Center frond -->
+  <path d="M16 6 Q12 2 8 6 Q12 6 16 10 Q20 6 24 6 Q20 2 16 6 Z" fill="#00d26a"/>
+  <!-- Lower left frond -->
+  <path d="M14 16 Q4 14 2 20 Q8 16 14 18 Z" fill="#00a855"/>
+  <!-- Lower right frond -->
+  <path d="M18 16 Q28 14 30 20 Q24 16 18 18 Z" fill="#00a855"/>
+</svg>

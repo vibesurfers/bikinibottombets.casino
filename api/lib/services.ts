@@ -46,6 +46,14 @@ export async function crawlSite(url: string, limit = 10): Promise<ScrapeResult[]
   }));
 }
 
+export interface SearchResult {
+  url: string;
+  title: string;
+  description: string;
+  markdown?: string;
+  metadata?: Record<string, unknown>;
+}
+
 export async function searchWeb(query: string, limit = 5): Promise<ScrapeResult[]> {
   if (!config.FIRECRAWL_API_KEY) throw new Error('Firecrawl API key not configured');
   const response = await fetch(`${FIRECRAWL_API}/search`, {
@@ -58,9 +66,58 @@ export async function searchWeb(query: string, limit = 5): Promise<ScrapeResult[
   });
   if (!response.ok) throw new Error(`Firecrawl search failed: ${response.status}`);
   const result = await response.json();
+
+  // Firecrawl search returns: url, title, description (NOT markdown content)
   return (result.data || []).map((doc: any) => ({
-    url: doc.url || '', markdown: doc.markdown || doc.snippet || '', metadata: doc.metadata || {},
+    url: doc.url || '',
+    markdown: doc.description || doc.snippet || '', // Use description as content
+    metadata: {
+      title: doc.title || '',
+      description: doc.description || '',
+      ...doc.metadata,
+    },
   }));
+}
+
+/**
+ * Search and scrape: searches for URLs then scrapes top results for full content
+ * More expensive but gets actual page content
+ */
+export async function searchAndScrape(query: string, limit = 3): Promise<ScrapeResult[]> {
+  if (!config.FIRECRAWL_API_KEY) throw new Error('Firecrawl API key not configured');
+
+  // First, search to get relevant URLs
+  const searchResponse = await fetch(`${FIRECRAWL_API}/search`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${config.FIRECRAWL_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query, limit }),
+  });
+
+  if (!searchResponse.ok) throw new Error(`Firecrawl search failed: ${searchResponse.status}`);
+  const searchResult = await searchResponse.json();
+  const urls = (searchResult.data || []).map((d: any) => d.url).filter(Boolean);
+
+  if (urls.length === 0) return [];
+
+  // Then scrape each URL for full content (in parallel)
+  const scrapePromises = urls.slice(0, limit).map(async (url: string) => {
+    try {
+      return await scrapeUrl(url);
+    } catch (e) {
+      // Return search result data if scrape fails
+      const searchData = searchResult.data.find((d: any) => d.url === url);
+      return {
+        url,
+        markdown: searchData?.description || '',
+        metadata: { title: searchData?.title || url, description: searchData?.description || '' },
+      };
+    }
+  });
+
+  return Promise.all(scrapePromises);
 }
 
 // Reducto

@@ -12,7 +12,7 @@ export interface Agent {
 }
 
 export interface Inquisition {
-  _id?: string;
+  _id?: any;
   targetCompany: string;
   targetDescription: string;
   proposedBy: string;

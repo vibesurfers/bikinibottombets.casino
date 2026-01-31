@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 48">
+  <!-- Palm Tree Icon -->
+  <g transform="translate(2, 2) scale(0.9)">
+    <!-- Trunk -->
+    <rect x="20" y="24" width="6" height="20" rx="1" fill="#8B5A2B"/>
+    <!-- Left frond -->
+    <path d="M23 22 Q8 14 2 22 Q12 18 20 24 Z" fill="#00d26a"/>
+    <!-- Right frond -->
+    <path d="M23 22 Q38 14 44 22 Q34 18 26 24 Z" fill="#00d26a"/>
+    <!-- Center frond -->
+    <path d="M23 10 Q17 4 12 10 Q17 10 23 16 Q29 10 34 10 Q29 4 23 10 Z" fill="#00d26a"/>
+    <!-- Lower left frond -->
+    <path d="M20 24 Q6 22 2 30 Q12 24 20 28 Z" fill="#00a855"/>
+    <!-- Lower right frond -->
+    <path d="M26 24 Q40 22 44 30 Q34 24 26 28 Z" fill="#00a855"/>
+  </g>
+
+  <!-- Text: BIKINI BOTTOM BETS -->
+  <text x="52" y="22" font-family="Inter, -apple-system, sans-serif" font-size="12" font-weight="800" fill="#e6edf3" letter-spacing="0.5">BIKINI BOTTOM</text>
+  <text x="52" y="40" font-family="Inter, -apple-system, sans-serif" font-size="16" font-weight="800" fill="#00d26a" letter-spacing="1">BETS</text>
+</svg>

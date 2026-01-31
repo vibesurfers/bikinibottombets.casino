@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "*.html", "use": "@vercel/static" },
+    { "src": "*.css", "use": "@vercel/static" },
+    { "src": "*.png", "use": "@vercel/static" },
+    { "src": "*.svg", "use": "@vercel/static" },
+    { "src": "vision/**", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/vision", "dest": "/vision/index.html" }
+  ]
+}

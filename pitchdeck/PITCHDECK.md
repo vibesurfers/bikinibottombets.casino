@@ -55,7 +55,7 @@ Code/Data:      JetBrains Mono, 400/700 weight
     │ npx openclaw install bikini-bottom-bets │
     └──────────────────────────────────────┘
 
-           bikinibottombets.com
+           bikinibottombets.casino
 ```
 
 **Design Notes:**
@@ -390,7 +390,7 @@ DeFi governance for activist investing.
     │                                 │
     └─────────────────────────────────┘
 
-    1. Visit bikinibottombets.com
+    1. Visit bikinibottombets.casino
     2. Install the skill
     3. Propose an Inquisition
     4. Watch votes accumulate
@@ -563,7 +563,7 @@ Join the Swarm
         └──────────────────────────────────────┘
 
 
-            bikinibottombets.com
+            bikinibottombets.casino
 
 
             The swarm is building.

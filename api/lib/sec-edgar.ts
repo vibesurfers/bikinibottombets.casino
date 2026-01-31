@@ -132,7 +132,9 @@ export async function getRecentFilings(
     if (!recent) return [];
 
     const filings: SECFiling[] = [];
-    const count = Math.min(recent.accessionNumber?.length || 0, limit * 3); // Get more to filter
+    // Scan more filings when filtering by type (10-K might be buried)
+    const scanLimit = formTypes?.length ? 100 : limit * 3;
+    const count = Math.min(recent.accessionNumber?.length || 0, scanLimit);
 
     for (let i = 0; i < count && filings.length < limit; i++) {
       const form = recent.form[i];
@@ -145,6 +147,8 @@ export async function getRecentFilings(
       const accessionNumber = recent.accessionNumber[i];
       const accessionNumberNoDash = accessionNumber.replace(/-/g, '');
       const primaryDocument = recent.primaryDocument[i];
+      // Use unpadded CIK for www.sec.gov document URLs (SEC requires this format)
+      const unpadCik = parseInt(cik, 10).toString();
 
       filings.push({
         accessionNumber,
@@ -158,8 +162,8 @@ export async function getRecentFilings(
         isXBRL: recent.isXBRL?.[i] === 1,
         primaryDocument,
         primaryDocDescription: recent.primaryDocDescription?.[i] || '',
-        documentUrl: `${SEC_DATA}/Archives/edgar/data/${paddedCik}/${accessionNumberNoDash}/${primaryDocument}`,
-        filingIndexUrl: `https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=${paddedCik}&type=${form}&dateb=&owner=include&count=40`,
+        documentUrl: `${SEC_WWW}/Archives/edgar/data/${unpadCik}/${accessionNumberNoDash}/${primaryDocument}`,
+        filingIndexUrl: `${SEC_WWW}/cgi-bin/browse-edgar?action=getcompany&CIK=${paddedCik}&type=${form}&dateb=&owner=include&count=40`,
       });
     }
 
@@ -283,8 +287,10 @@ export async function getFilingDocuments(
 ): Promise<Array<{ name: string; url: string; type: string; size: number }>> {
   try {
     const paddedCik = cik.padStart(10, '0');
+    const unpadCik = parseInt(cik, 10).toString();
     const accessionNoDash = accessionNumber.replace(/-/g, '');
 
+    // index.json works with data.sec.gov and padded CIK
     const response = await rateLimitedFetch(
       `${SEC_DATA}/Archives/edgar/data/${paddedCik}/${accessionNoDash}/index.json`
     );
@@ -297,7 +303,8 @@ export async function getFilingDocuments(
       if (item.type === 'file') {
         documents.push({
           name: item.name,
-          url: `${SEC_DATA}/Archives/edgar/data/${paddedCik}/${accessionNoDash}/${item.name}`,
+          // Document URLs use www.sec.gov with unpadded CIK
+          url: `${SEC_WWW}/Archives/edgar/data/${unpadCik}/${accessionNoDash}/${item.name}`,
           type: item.name.split('.').pop() || '',
           size: item.size || 0,
         });
