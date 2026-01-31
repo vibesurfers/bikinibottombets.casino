@@ -1,19 +1,18 @@
 {
   "name": "active-investor",
   "version": "1.0.0",
-  "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js",
+    "dev": "vercel dev",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
     "@mendable/firecrawl-js": "^1.0.0",
+    "@vercel/node": "^3.2.0",
     "resend": "^3.0.0",
-    "fastify": "^4.28.0",
-    "@fastify/cors": "^9.0.0",
     "mongodb": "^6.8.0",
     "zod": "^3.23.0"
   },
