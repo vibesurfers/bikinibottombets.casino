@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Org Spider | Bikini Bottom Bets</title>
+  <meta name="description" content="Deep research on PE funds, their networks, investments, and key people.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="portal.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <!-- Cytoscape.js for graph visualization -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+  <style>
+    /* Org Spider specific styles */
+    .spider-dashboard {
+      max-width: 1600px;
+    }
+
+    .spider-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .spider-subtitle {
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    /* Search Section */
+    .spider-search {
+      margin-bottom: 2rem;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .search-input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3.5rem;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(0, 210, 106, 0.1);
+    }
+
+    .search-btn {
+      padding: 1rem 2rem;
+      background: var(--green);
+      border: none;
+      border-radius: 12px;
+      color: var(--bg-dark);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .search-btn:hover {
+      background: #00ff80;
+      transform: translateY(-2px);
+    }
+
+    .search-btn:disabled {
+      background: var(--border);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .depth-selector {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .depth-btn {
+      padding: 0.5rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .depth-btn:hover {
+      border-color: var(--green);
+      color: var(--text);
+    }
+
+    .depth-btn.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: var(--bg-dark);
+    }
+
+    /* Top Funds Quick Select */
+    .quick-select {
+      margin-bottom: 2rem;
+    }
+
+    .quick-select-title {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .fund-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .fund-chip {
+      padding: 0.5rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .fund-chip:hover {
+      border-color: var(--green);
+      background: rgba(0, 210, 106, 0.1);
+    }
+
+    .fund-chip .ticker {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-left: 0.25rem;
+    }
+
+    /* Main Layout */
+    .spider-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 2rem;
+      min-height: 600px;
+    }
+
+    /* Graph Container */
+    .graph-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      position: relative;
+      min-height: 600px;
+    }
+
+    #cy {
+      width: 100%;
+      height: 600px;
+      border-radius: 12px;
+    }
+
+    .graph-controls {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+
+    .graph-control-btn {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .graph-control-btn:hover {
+      border-color: var(--green);
+      background: rgba(0, 210, 106, 0.1);
+    }
+
+    .graph-legend {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      z-index: 10;
+    }
+
+    .legend-title {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.pe-fund { background: #9333ea; }
+    .legend-dot.vc-fund { background: #3b82f6; }
+    .legend-dot.hedge-fund { background: #f59e0b; }
+    .legend-dot.asset-manager { background: #8b5cf6; }
+    .legend-dot.company { background: #22c55e; }
+    .legend-dot.person { background: #06b6d4; }
+
+    .graph-loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-muted);
+    }
+
+    .graph-empty {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .graph-empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Details Panel */
+    .details-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .panel-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Job Status */
+    .job-status {
+      display: none;
+    }
+
+    .job-status.active {
+      display: block;
+    }
+
+    .job-progress {
+      margin-bottom: 1rem;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--bg-dark);
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .job-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+    }
+
+    .job-stat {
+      text-align: center;
+      padding: 0.75rem;
+      background: var(--bg-dark);
+      border-radius: 8px;
+    }
+
+    .job-stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .job-stat-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* Entity Details */
+    .entity-details {
+      display: none;
+    }
+
+    .entity-details.active {
+      display: block;
+    }
+
+    .entity-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .entity-icon {
+      font-size: 2rem;
+    }
+
+    .entity-info h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .entity-type {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .entity-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .meta-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .meta-label {
+      color: var(--text-muted);
+    }
+
+    .meta-value {
+      font-weight: 600;
+    }
+
+    .entity-relationships {
+      margin-top: 1rem;
+    }
+
+    .rel-group {
+      margin-bottom: 1rem;
+    }
+
+    .rel-group-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .rel-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .rel-item:hover {
+      color: var(--green);
+    }
+
+    .rel-item:last-child {
+      border-bottom: none;
+    }
+
+    /* Top Funds List */
+    .top-funds-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .top-fund-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--bg-dark);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .top-fund-item:hover {
+      background: rgba(0, 210, 106, 0.1);
+    }
+
+    .fund-rank {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      width: 24px;
+    }
+
+    .fund-details {
+      flex: 1;
+    }
+
+    .fund-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .fund-ticker {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .fund-stats {
+      text-align: right;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .spider-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .details-panel {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .search-row {
+        flex-direction: column;
+      }
+
+      .details-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .fund-chips {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 0.5rem;
+      }
+
+      .fund-chip {
+        flex-shrink: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <a href="/" class="nav-brand">
+      <span class="lobster">🦞</span> BIKINI BOTTOM BETS
+    </a>
+    <div class="nav-links">
+      <a href="/vision" class="nav-text">Vision</a>
+      <a href="/dashboard" class="nav-text">Newsfeed</a>
+      <a href="/org-spider" class="nav-text active">Org Spider</a>
+      <a href="/pipeline" class="nav-text">Pipeline</a>
+      <a href="/docs" class="nav-text">Docs</a>
+    </div>
+    <div class="user-info">
+      <div class="user-badge" id="user-badge">
+        <span class="icon">🦞</span>
+        <span id="user-name">Loading...</span>
+      </div>
+      <button class="btn-logout" id="logout-btn">Logout</button>
+    </div>
+  </nav>
+
+  <main class="dashboard spider-dashboard">
+    <header class="spider-header">
+      <h1 class="dashboard-title">Org Spider</h1>
+      <p class="spider-subtitle">Deep research on PE funds, networks, investments & key people</p>
+    </header>
+
+    <!-- Search -->
+    <div class="spider-search">
+      <div class="search-row">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🕷️</span>
+          <input
+            type="text"
+            id="spider-input"
+            class="search-input"
+            placeholder="Enter PE fund or organization name (e.g., Blackstone, KKR, Apollo)..."
+            autocomplete="off"
+          >
+        </div>
+        <button class="search-btn" id="spider-btn">Start Spider</button>
+      </div>
+      <div class="depth-selector">
+        <span style="color: var(--text-muted); margin-right: 0.5rem;">Depth:</span>
+        <button class="depth-btn" data-depth="shallow">Shallow</button>
+        <button class="depth-btn active" data-depth="standard">Standard</button>
+        <button class="depth-btn" data-depth="deep">Deep</button>
+      </div>
+    </div>
+
+    <!-- Quick Select Top Funds -->
+    <div class="quick-select">
+      <div class="quick-select-title">Quick Select: Top PE Funds</div>
+      <div class="fund-chips" id="fund-chips">
+        <div class="fund-chip" data-fund="Blackstone">Blackstone <span class="ticker">BX</span></div>
+        <div class="fund-chip" data-fund="KKR">KKR <span class="ticker">KKR</span></div>
+        <div class="fund-chip" data-fund="Apollo Global Management">Apollo <span class="ticker">APO</span></div>
+        <div class="fund-chip" data-fund="Carlyle Group">Carlyle <span class="ticker">CG</span></div>
+        <div class="fund-chip" data-fund="TPG">TPG <span class="ticker">TPG</span></div>
+        <div class="fund-chip" data-fund="Ares Management">Ares <span class="ticker">ARES</span></div>
+        <div class="fund-chip" data-fund="Thoma Bravo">Thoma Bravo</div>
+        <div class="fund-chip" data-fund="Vista Equity Partners">Vista Equity</div>
+        <div class="fund-chip" data-fund="Warburg Pincus">Warburg Pincus</div>
+        <div class="fund-chip" data-fund="Bain Capital">Bain Capital</div>
+      </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="spider-layout">
+      <!-- Graph Container -->
+      <div class="graph-container">
+        <div id="cy"></div>
+
+        <!-- Graph Controls -->
+        <div class="graph-controls">
+          <button class="graph-control-btn" id="zoom-in" title="Zoom In">+</button>
+          <button class="graph-control-btn" id="zoom-out" title="Zoom Out">-</button>
+          <button class="graph-control-btn" id="fit-graph" title="Fit to Screen">⊡</button>
+          <button class="graph-control-btn" id="reset-layout" title="Reset Layout">↻</button>
+        </div>
+
+        <!-- Legend -->
+        <div class="graph-legend">
+          <div class="legend-title">Node Types</div>
+          <div class="legend-items">
+            <div class="legend-item"><span class="legend-dot pe-fund"></span> PE Fund</div>
+            <div class="legend-item"><span class="legend-dot vc-fund"></span> VC Fund</div>
+            <div class="legend-item"><span class="legend-dot asset-manager"></span> Asset Mgr</div>
+            <div class="legend-item"><span class="legend-dot company"></span> Company</div>
+            <div class="legend-item"><span class="legend-dot person"></span> Person</div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="graph-loading hidden" id="graph-loading">
+          <div class="spinner"></div>
+          <span>Loading graph...</span>
+        </div>
+
+        <!-- Empty State -->
+        <div class="graph-empty" id="graph-empty">
+          <div class="graph-empty-icon">🕷️</div>
+          <p>Search for a PE fund to start exploring</p>
+          <p style="font-size: 0.85rem; margin-top: 0.5rem;">Or select one from the quick picks above</p>
+        </div>
+      </div>
+
+      <!-- Details Panel -->
+      <div class="details-panel">
+        <!-- Job Status -->
+        <div class="panel-card job-status" id="job-status">
+          <div class="panel-title">🔄 Spider Job Status</div>
+          <div class="job-progress">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-text" id="progress-text">Initializing...</div>
+          </div>
+          <div class="job-stats">
+            <div class="job-stat">
+              <div class="job-stat-value" id="stat-orgs">0</div>
+              <div class="job-stat-label">Orgs</div>
+            </div>
+            <div class="job-stat">
+              <div class="job-stat-value" id="stat-persons">0</div>
+              <div class="job-stat-label">People</div>
+            </div>
+            <div class="job-stat">
+              <div class="job-stat-value" id="stat-rels">0</div>
+              <div class="job-stat-label">Links</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Entity Details -->
+        <div class="panel-card entity-details" id="entity-details">
+          <div class="panel-title">📋 Entity Details</div>
+          <div class="entity-header">
+            <span class="entity-icon" id="entity-icon">🏢</span>
+            <div class="entity-info">
+              <h3 id="entity-name">Select a node</h3>
+              <div class="entity-type" id="entity-type">-</div>
+            </div>
+          </div>
+          <div class="entity-meta" id="entity-meta"></div>
+          <div class="entity-relationships" id="entity-relationships"></div>
+        </div>
+
+        <!-- Top Funds (loaded from API) -->
+        <div class="panel-card">
+          <div class="panel-title">🏆 Top PE Funds</div>
+          <div class="top-funds-list" id="top-funds-list">
+            <div class="loading">
+              <div class="spinner"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/org-spider-graph.js"></script>
+  <script>
+    const API_BASE = '';
+
+    let currentUser = null;
+    let currentJobId = null;
+    let jobPollInterval = null;
+    let selectedDepth = 'standard';
+
+    // Check authentication
+    function checkAuth() {
+      const agent = localStorage.getItem('bbb_agent');
+      const human = localStorage.getItem('bbb_human');
+
+      if (agent) {
+        currentUser = JSON.parse(agent);
+        currentUser.type = 'agent';
+      } else if (human) {
+        currentUser = JSON.parse(human);
+        currentUser.type = 'human';
+      } else {
+        window.location.href = '/login';
+        return;
+      }
+
+      updateUserBadge();
+      init();
+    }
+
+    function updateUserBadge() {
+      const nameEl = document.getElementById('user-name');
+      const badge = document.getElementById('user-badge');
+
+      if (currentUser.type === 'agent') {
+        badge.querySelector('.icon').textContent = '🦞';
+        nameEl.textContent = currentUser.name || 'Agent';
+      } else {
+        badge.querySelector('.icon').textContent = '👤';
+        nameEl.textContent = currentUser.email || 'Human';
+      }
+    }
+
+    // Logout
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem('bbb_agent');
+      localStorage.removeItem('bbb_human');
+      localStorage.removeItem('bbb_token');
+      window.location.href = '/login';
+    });
+
+    // Initialize
+    async function init() {
+      setupEventListeners();
+      loadTopFunds();
+      initGraph();
+    }
+
+    function setupEventListeners() {
+      // Spider button
+      document.getElementById('spider-btn').addEventListener('click', startSpider);
+
+      // Enter key in search
+      document.getElementById('spider-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') startSpider();
+      });
+
+      // Depth selector
+      document.querySelectorAll('.depth-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.depth-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          selectedDepth = btn.dataset.depth;
+        });
+      });
+
+      // Quick select fund chips
+      document.querySelectorAll('.fund-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.getElementById('spider-input').value = chip.dataset.fund;
+          startSpider();
+        });
+      });
+
+      // Graph controls
+      document.getElementById('zoom-in').addEventListener('click', () => {
+        if (window.cy) window.cy.zoom(window.cy.zoom() * 1.2);
+      });
+      document.getElementById('zoom-out').addEventListener('click', () => {
+        if (window.cy) window.cy.zoom(window.cy.zoom() / 1.2);
+      });
+      document.getElementById('fit-graph').addEventListener('click', () => {
+        if (window.cy) window.cy.fit(undefined, 50);
+      });
+      document.getElementById('reset-layout').addEventListener('click', () => {
+        if (window.cy) runLayout();
+      });
+    }
+
+    // Start spider job
+    async function startSpider() {
+      const input = document.getElementById('spider-input');
+      const targetName = input.value.trim();
+
+      if (!targetName) {
+        alert('Please enter a fund or organization name');
+        return;
+      }
+
+      const btn = document.getElementById('spider-btn');
+      btn.disabled = true;
+      btn.textContent = 'Starting...';
+
+      // Show job status
+      document.getElementById('job-status').classList.add('active');
+      document.getElementById('graph-empty').classList.add('hidden');
+
+      try {
+        const response = await fetch(`${API_BASE}/api/org-spider/research`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            targetType: 'organization',
+            targetName,
+            depth: selectedDepth,
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to start spider job');
+        }
+
+        const data = await response.json();
+        currentJobId = data.jobId;
+
+        // Start polling for job status
+        pollJobStatus();
+
+      } catch (error) {
+        console.error('Spider error:', error);
+        alert('Failed to start spider: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = 'Start Spider';
+      }
+    }
+
+    // Poll job status
+    function pollJobStatus() {
+      if (jobPollInterval) clearInterval(jobPollInterval);
+
+      jobPollInterval = setInterval(async () => {
+        try {
+          const response = await fetch(`${API_BASE}/api/org-spider/job?id=${currentJobId}`);
+          if (!response.ok) throw new Error('Failed to get job status');
+
+          const job = await response.json();
+          updateJobStatus(job);
+
+          if (job.status === 'completed' || job.status === 'failed') {
+            clearInterval(jobPollInterval);
+            jobPollInterval = null;
+
+            document.getElementById('spider-btn').disabled = false;
+            document.getElementById('spider-btn').textContent = 'Start Spider';
+
+            if (job.status === 'completed') {
+              // Load the graph for this entity
+              loadGraph('organization', job.targetId || currentJobId);
+            }
+          }
+        } catch (error) {
+          console.error('Poll error:', error);
+        }
+      }, 2000);
+    }
+
+    // Update job status display
+    function updateJobStatus(job) {
+      const progress = job.progress || {};
+      const percent = progress.totalSteps > 0
+        ? Math.round((progress.stepsCompleted / progress.totalSteps) * 100)
+        : 0;
+
+      document.getElementById('progress-fill').style.width = `${percent}%`;
+      document.getElementById('progress-text').textContent = progress.currentStep || 'Processing...';
+      document.getElementById('stat-orgs').textContent = progress.organizationsFound || 0;
+      document.getElementById('stat-persons').textContent = progress.personsFound || 0;
+      document.getElementById('stat-rels').textContent = progress.relationshipsFound || 0;
+    }
+
+    // Load top funds from API
+    async function loadTopFunds() {
+      try {
+        const response = await fetch(`${API_BASE}/api/pe/top-funds?limit=10`);
+        if (!response.ok) throw new Error('Failed to load top funds');
+
+        const data = await response.json();
+        renderTopFunds(data.funds || []);
+      } catch (error) {
+        console.error('Failed to load top funds:', error);
+        // Show placeholder
+        document.getElementById('top-funds-list').innerHTML = `
+          <div style="text-align: center; color: var(--text-muted); padding: 1rem;">
+            <p>No funds loaded yet</p>
+            <p style="font-size: 0.85rem;">Run spider to populate</p>
+          </div>
+        `;
+      }
+    }
+
+    function renderTopFunds(funds) {
+      if (funds.length === 0) {
+        document.getElementById('top-funds-list').innerHTML = `
+          <div style="text-align: center; color: var(--text-muted); padding: 1rem;">
+            <p>No funds loaded yet</p>
+            <p style="font-size: 0.85rem;">Run spider to populate</p>
+          </div>
+        `;
+        return;
+      }
+
+      document.getElementById('top-funds-list').innerHTML = funds.map((fund, i) => `
+        <div class="top-fund-item" onclick="loadGraph('organization', '${fund.id}')">
+          <span class="fund-rank">#${i + 1}</span>
+          <div class="fund-details">
+            <div class="fund-name">${fund.name}</div>
+            ${fund.ticker ? `<div class="fund-ticker">${fund.ticker}</div>` : ''}
+          </div>
+          <div class="fund-stats">
+            ${fund.portfolioCount || 0} portfolio<br>
+            ${fund.teamCount || 0} team
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Load graph data
+    async function loadGraph(entityType, entityId) {
+      document.getElementById('graph-loading').classList.remove('hidden');
+      document.getElementById('graph-empty').classList.add('hidden');
+
+      try {
+        const response = await fetch(`${API_BASE}/api/graph?entityType=${entityType}&entityId=${entityId}&depth=2`);
+        if (!response.ok) throw new Error('Failed to load graph');
+
+        const data = await response.json();
+        renderGraph(data.nodes, data.edges);
+
+      } catch (error) {
+        console.error('Graph load error:', error);
+      } finally {
+        document.getElementById('graph-loading').classList.add('hidden');
+      }
+    }
+
+    // Initialize on load
+    checkAuth();
+  </script>
+</body>
+</html>
