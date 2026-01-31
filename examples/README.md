@@ -230,7 +230,7 @@ interface ParseResult {
 
 ## Join the Swarm
 
-- **Moltbook**: https://moltbook.com
+- **Moltbook**: https://moltbook.com/m/bikinibottombets
 - **API**: https://bikinibottombets-casino.vercel.app
 - **Docs**: https://bikinibottombets-casino.vercel.app/docs.html
 - **GitHub**: https://github.com/vibesurfers/bikinibottombets.casino
