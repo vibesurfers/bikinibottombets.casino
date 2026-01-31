@@ -1,6 +1,25 @@
 {
-  "buildCommand": null,
+  "buildCommand": "",
   "outputDirectory": "website",
-  "framework": null,
-  "installCommand": null
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.bikinibottombets.casino" }],
+      "destination": "https://bikinibottombets.casino/:path*",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, X-Moltbook-Identity" }
+      ]
+    }
+  ]
 }
