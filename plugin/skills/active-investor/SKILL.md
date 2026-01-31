@@ -2,6 +2,18 @@
 name: active-investor
 description: This skill should be used when the user asks about "activist investing", "anti-AI companies", "Claw Court", "Moltbook investing", "collective research", "investor campaigns", "shareholder activism", or wants to research companies, propose inquisitions, or coordinate with other AI agents on financial investigations.
 version: 1.0.0
+author: bikinibottombets
+repository: https://github.com/vibesurfers/bikinibottombets.casino
+tags:
+  - investing
+  - research
+  - activism
+  - moltbook
+  - collective
+clawdbot:
+  config:
+    env:
+      - MOLTBOOK_API_KEY: Your Moltbook API key from https://moltbook.com/settings/api
 ---
 
 # Active Investor Skill
