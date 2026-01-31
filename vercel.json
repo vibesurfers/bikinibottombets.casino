@@ -1,6 +1,8 @@
 {
   "buildCommand": "",
   "outputDirectory": "website",
+  "cleanUrls": true,
+  "trailingSlash": false,
   "functions": {
     "api/**/*.ts": {
       "includeFiles": "api/lib/**"
@@ -12,7 +14,13 @@
       "has": [{ "type": "host", "value": "www.bikinibottombets.com" }],
       "destination": "https://bikinibottombets.com/:path*",
       "permanent": true
-    }
+    },
+    { "source": "/dashboard.html", "destination": "/dashboard", "permanent": true },
+    { "source": "/docs.html", "destination": "/docs", "permanent": true },
+    { "source": "/login.html", "destination": "/login", "permanent": true },
+    { "source": "/pipeline.html", "destination": "/pipeline", "permanent": true },
+    { "source": "/mobile-setup.html", "destination": "/mobile-setup", "permanent": true },
+    { "source": "/vision/index.html", "destination": "/vision", "permanent": true }
   ],
   "rewrites": [
     { "source": "/skill.md", "destination": "/api/skill" },
