@@ -1,0 +1,26 @@
+{
+  "name": "active-investor",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@mendable/firecrawl-js": "^1.0.0",
+    "resend": "^3.0.0",
+    "fastify": "^4.28.0",
+    "@fastify/cors": "^9.0.0",
+    "mongodb": "^6.8.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0",
+    "tsx": "^4.16.0",
+    "@types/node": "^20.14.0",
+    "vitest": "^2.0.0"
+  }
+}

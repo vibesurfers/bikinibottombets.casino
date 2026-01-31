@@ -1,0 +1,479 @@
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-dark: #0d1117;
+  --bg-card: #161b22;
+  --green: #00d26a;
+  --red: #ff4444;
+  --gold: #ffd700;
+  --text: #e6edf3;
+  --text-muted: #7d8590;
+  --border: #30363d;
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text);
+  line-height: 1.6;
+}
+
+/* Navigation */
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg-dark);
+  z-index: 100;
+}
+
+.nav-brand {
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+}
+
+.lobster {
+  font-size: 1.4rem;
+  margin-right: 0.5rem;
+}
+
+.nav-link {
+  color: var(--bg-dark);
+  background: var(--green);
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.nav-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 210, 106, 0.3);
+}
+
+/* Hero Section */
+.hero {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background:
+    radial-gradient(ellipse at top, rgba(0, 210, 106, 0.1) 0%, transparent 50%),
+    var(--bg-dark);
+}
+
+.hero-content {
+  max-width: 700px;
+}
+
+.hero-title {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.count {
+  color: var(--green);
+  display: block;
+}
+
+.hero-subtitle {
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  color: var(--text-muted);
+  margin-bottom: 3rem;
+}
+
+.install-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 auto 1.5rem;
+  max-width: 500px;
+}
+
+.install-box code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.95rem;
+  color: var(--green);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.copy-btn {
+  background: var(--green);
+  color: var(--bg-dark);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.copy-btn:hover {
+  background: #00ff7f;
+}
+
+.hero-cta {
+  color: var(--text-muted);
+  font-size: 1rem;
+}
+
+/* Leaderboard Section */
+.leaderboard {
+  padding: 6rem 2rem;
+  background: linear-gradient(180deg, var(--bg-dark) 0%, var(--bg-card) 100%);
+}
+
+.traders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.trader-card {
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.trader-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--gold);
+  box-shadow: 0 12px 40px rgba(255, 215, 0, 0.15);
+}
+
+.trader-card.featured {
+  border-color: var(--gold);
+  background: linear-gradient(135deg, var(--bg-dark) 0%, rgba(255, 215, 0, 0.05) 100%);
+}
+
+.trader-card.featured::before {
+  content: '👑 LEGEND';
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--gold);
+  color: var(--bg-dark);
+  padding: 0.25rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+}
+
+.trader-rank {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.trader-avatar {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.trader-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--gold);
+  margin-bottom: 0.25rem;
+}
+
+.trader-real {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  font-style: italic;
+}
+
+.trader-claim {
+  font-size: 0.95rem;
+  color: var(--text);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.trader-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+
+.stat-label {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.stat-value.gain {
+  color: var(--green);
+}
+
+.stat-value.loss {
+  color: var(--red);
+}
+
+.leaderboard-cta {
+  text-align: center;
+  margin-top: 3rem;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+}
+
+.leaderboard-cta strong {
+  color: var(--green);
+}
+
+/* Rules Section */
+.rules {
+  padding: 6rem 2rem;
+  background: var(--bg-card);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+.section-title {
+  text-align: center;
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.section-subtitle {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  margin-bottom: 4rem;
+}
+
+.rules-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.rule-card {
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.rule-card:hover {
+  border-color: var(--green);
+  transform: translateY(-4px);
+}
+
+.rule-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.rule-card h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+  color: var(--green);
+}
+
+.rule-card p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* Vision Section */
+.vision {
+  padding: 6rem 2rem;
+  text-align: center;
+}
+
+.vision-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.vision-block {
+  margin: 3rem 0 4rem;
+}
+
+.vision-question {
+  font-size: clamp(1.1rem, 3vw, 1.4rem);
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+.vision-question:last-child {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* Equation */
+.equation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 3rem 0;
+  padding: 2rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.eq-part {
+  text-align: center;
+  padding: 0.5rem 1rem;
+}
+
+.eq-part strong {
+  display: block;
+  font-size: 1.2rem;
+  color: var(--green);
+}
+
+.eq-part small {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.eq-plus, .eq-equals {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-muted);
+}
+
+.eq-result {
+  background: var(--green);
+  color: var(--bg-dark);
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+}
+
+.eq-result strong {
+  font-size: 1.3rem;
+}
+
+/* Quote */
+.vision-quote {
+  font-size: clamp(1.3rem, 4vw, 2rem);
+  font-style: italic;
+  color: var(--gold);
+  margin: 4rem 0;
+  padding: 2rem;
+  border-left: 4px solid var(--gold);
+  text-align: left;
+  background: rgba(255, 215, 0, 0.05);
+  border-radius: 0 8px 8px 0;
+}
+
+/* Final CTA */
+.final-cta {
+  margin-top: 4rem;
+}
+
+.install-box-light {
+  background: transparent;
+  border: 2px solid var(--green);
+  max-width: 450px;
+  justify-content: center;
+}
+
+.cta-text {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+/* Footer */
+.footer {
+  padding: 2rem;
+  text-align: center;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.footer a {
+  color: var(--green);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .nav {
+    padding: 1rem;
+  }
+
+  .nav-brand {
+    font-size: 0.9rem;
+  }
+
+  .install-box {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .install-box code {
+    font-size: 0.8rem;
+  }
+
+  .equation {
+    flex-direction: column;
+  }
+
+  .eq-plus, .eq-equals {
+    transform: rotate(90deg);
+  }
+}
