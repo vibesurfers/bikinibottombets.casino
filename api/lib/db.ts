@@ -82,7 +82,10 @@ export async function connectToDatabase(): Promise<{ client: MongoClient; db: Db
     throw new Error('MONGODB_URI environment variable not set');
   }
 
-  const client = new MongoClient(config.MONGODB_URI);
+  const client = new MongoClient(config.MONGODB_URI, {
+    serverSelectionTimeoutMS: 10000,
+    connectTimeoutMS: 10000,
+  });
   await client.connect();
   const db = client.db('active-investor');
 

@@ -12,14 +12,15 @@
   "dependencies": {
     "@mendable/firecrawl-js": "^1.0.0",
     "@vercel/node": "^3.2.0",
-    "resend": "^3.0.0",
     "mongodb": "^6.8.0",
+    "resend": "^3.0.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
-    "typescript": "^5.5.0",
-    "tsx": "^4.16.0",
     "@types/node": "^20.14.0",
+    "dotenv": "^17.2.3",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0",
     "vitest": "^2.0.0"
   }
 }

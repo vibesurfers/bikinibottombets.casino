@@ -75,7 +75,7 @@ const testAgents: Record<string, MoltbookAgent> = {
  * Requires agent to be claimed by a human to ensure accountability.
  */
 export async function verifyAgentIdentity(apiKey: string): Promise<MoltbookAgent> {
-  if (isTestMode) {
+  if (isTestMode()) {
     const agent = testAgents[apiKey];
     if (!agent) {
       throw new Error('Invalid API key');
