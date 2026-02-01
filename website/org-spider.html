@@ -162,6 +162,15 @@
       margin-left: 0.25rem;
     }
 
+    .fund-chip--vc {
+      border-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .fund-chip--vc:hover {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.1);
+    }
+
     /* Main Layout */
     .spider-layout {
       display: grid;
@@ -176,13 +185,61 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       position: relative;
-      min-height: 600px;
+      min-height: 800px;
     }
 
     #cy {
       width: 100%;
-      height: 600px;
+      height: 800px;
       border-radius: 12px;
+    }
+
+    .graph-title-bar {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 10;
+      display: none;
+    }
+
+    .graph-title-bar.active {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .graph-title-name {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .graph-title-type {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .share-btn {
+      padding: 0.35rem 0.75rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .share-btn:hover {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .share-btn.copied {
+      border-color: var(--green);
+      color: var(--green);
     }
 
     .graph-controls {
@@ -213,6 +270,53 @@
     .graph-control-btn:hover {
       border-color: var(--green);
       background: rgba(0, 210, 106, 0.1);
+    }
+
+    /* More button - bottom right */
+    .graph-more-btn {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      z-index: 10;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--green);
+      border-radius: 10px;
+      color: var(--green);
+      font-size: 0.85rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .graph-more-btn.visible {
+      display: flex;
+    }
+
+    .graph-more-btn:hover {
+      background: rgba(0, 210, 106, 0.15);
+      transform: translateY(-1px);
+    }
+
+    .graph-more-btn:disabled {
+      border-color: var(--border);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .graph-more-btn:disabled:hover {
+      background: var(--bg-dark);
+    }
+
+    .graph-more-btn .node-count {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 400;
     }
 
     .graph-legend {
@@ -455,6 +559,195 @@
       border-bottom: none;
     }
 
+    .rel-item-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    /* Loading skeleton */
+    .entity-loading {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+    }
+
+    .skeleton-line {
+      height: 14px;
+      background: linear-gradient(90deg, var(--bg-dark) 25%, rgba(255,255,255,0.06) 50%, var(--bg-dark) 75%);
+      background-size: 200% 100%;
+      border-radius: 4px;
+      animation: shimmer 1.5s infinite;
+    }
+
+    .skeleton-line.short { width: 40%; }
+    .skeleton-line.medium { width: 65%; }
+    .skeleton-line.long { width: 90%; }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Collapsible description */
+    .entity-description {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .entity-description.clamped {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .entity-description-toggle {
+      font-size: 0.8rem;
+      color: var(--green);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-top: 0.25rem;
+    }
+
+    .entity-description-toggle:hover {
+      text-decoration: underline;
+    }
+
+    /* Tag pills */
+    .entity-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .entity-tag {
+      padding: 0.2rem 0.6rem;
+      background: rgba(0, 210, 106, 0.1);
+      border: 1px solid rgba(0, 210, 106, 0.25);
+      border-radius: 12px;
+      font-size: 0.75rem;
+      color: var(--green);
+    }
+
+    /* External links */
+    .entity-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .entity-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text);
+      text-decoration: none;
+      padding: 0.35rem 0;
+      transition: color 0.2s;
+    }
+
+    .entity-link:hover {
+      color: var(--green);
+    }
+
+    .entity-link-icon {
+      font-size: 0.9rem;
+      width: 1.2rem;
+      text-align: center;
+    }
+
+    /* Biography block */
+    .entity-bio {
+      font-size: 0.85rem;
+      font-style: italic;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+      padding-left: 0.75rem;
+      border-left: 2px solid var(--border);
+    }
+
+    /* Education list */
+    .education-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .education-item {
+      padding: 0.5rem 0.75rem;
+      background: var(--bg-dark);
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .education-item-school {
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+
+    .education-item-degree {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* Section dividers in detail panel */
+    .detail-section {
+      margin-bottom: 1rem;
+    }
+
+    .detail-section-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Spider from here button */
+    .spider-from-btn {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: transparent;
+      border: 2px solid var(--green);
+      border-radius: 10px;
+      color: var(--green);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 0.5rem;
+    }
+
+    .spider-from-btn:hover {
+      background: rgba(0, 210, 106, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .spider-from-btn:disabled {
+      border-color: var(--border);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .spider-from-btn:disabled:hover {
+      background: transparent;
+    }
+
     /* Top Funds List */
     .top-funds-list {
       display: flex;
@@ -546,6 +839,7 @@
       <a href="/vision" class="nav-text">Vision</a>
       <a href="/dashboard" class="nav-text">Newsfeed</a>
       <a href="/org-spider" class="nav-text active">Org Spider</a>
+      <a href="/mindmap" class="nav-text">Mindmap</a>
       <a href="/pipeline" class="nav-text">Pipeline</a>
       <a href="/docs" class="nav-text">Docs</a>
     </div>
@@ -604,11 +898,33 @@
       </div>
     </div>
 
+    <!-- Quick Select VC & Tech Investors -->
+    <div class="quick-select">
+      <div class="quick-select-title">VC & Tech Investors</div>
+      <div class="fund-chips">
+        <div class="fund-chip fund-chip--vc" data-fund="Y Combinator" data-org-type="vc_fund">Y Combinator <span class="ticker">YC</span></div>
+        <div class="fund-chip fund-chip--vc" data-fund="Founders Fund" data-org-type="vc_fund">Founders Fund <span class="ticker">Peter Thiel</span></div>
+        <div class="fund-chip fund-chip--vc" data-fund="Andreessen Horowitz" data-org-type="vc_fund">a16z</div>
+        <div class="fund-chip fund-chip--vc" data-fund="Sequoia Capital" data-org-type="vc_fund">Sequoia Capital</div>
+        <div class="fund-chip fund-chip--vc" data-fund="Accel Partners" data-org-type="vc_fund">Accel</div>
+        <div class="fund-chip fund-chip--vc" data-fund="Benchmark" data-org-type="vc_fund">Benchmark</div>
+      </div>
+    </div>
+
     <!-- Main Layout -->
     <div class="spider-layout">
       <!-- Graph Container -->
       <div class="graph-container">
         <div id="cy"></div>
+
+        <!-- Graph Title (top-left, shown when viewing a specific entity) -->
+        <div class="graph-title-bar" id="graph-title-bar">
+          <div>
+            <div class="graph-title-name" id="graph-title-name"></div>
+            <div class="graph-title-type" id="graph-title-type"></div>
+          </div>
+          <button class="share-btn" id="share-btn" title="Copy shareable link">Copy Link</button>
+        </div>
 
         <!-- Graph Controls -->
         <div class="graph-controls">
@@ -629,6 +945,11 @@
             <div class="legend-item"><span class="legend-dot person"></span> Person</div>
           </div>
         </div>
+
+        <!-- More button -->
+        <button class="graph-more-btn" id="graph-more-btn">
+          + More <span class="node-count" id="more-node-count"></span>
+        </button>
 
         <!-- Loading State -->
         <div class="graph-loading hidden" id="graph-loading">
@@ -681,8 +1002,16 @@
               <div class="entity-type" id="entity-type">-</div>
             </div>
           </div>
-          <div class="entity-meta" id="entity-meta"></div>
-          <div class="entity-relationships" id="entity-relationships"></div>
+          <!-- Loading skeleton (shown while fetching full detail) -->
+          <div class="entity-loading hidden" id="entity-loading">
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line medium"></div>
+            <div class="skeleton-line short"></div>
+            <div class="skeleton-line long"></div>
+            <div class="skeleton-line medium"></div>
+          </div>
+          <!-- Rich body (populated dynamically by JS) -->
+          <div id="entity-rich-body"></div>
         </div>
 
         <!-- Top Funds (loaded from API) -->
@@ -706,6 +1035,15 @@
     let currentJobId = null;
     let jobPollInterval = null;
     let selectedDepth = 'standard';
+
+    // Format large numbers (local helper - formatNumber in org-spider-graph.js is not accessible here)
+    function fmtNum(num) {
+      if (num >= 1e12) return (num / 1e12).toFixed(1) + 'T';
+      if (num >= 1e9) return (num / 1e9).toFixed(1) + 'B';
+      if (num >= 1e6) return (num / 1e6).toFixed(1) + 'M';
+      if (num >= 1e3) return (num / 1e3).toFixed(1) + 'K';
+      return num.toString();
+    }
 
     // Check authentication
     function checkAuth() {
@@ -753,6 +1091,7 @@
       setupEventListeners();
       loadTopFunds();
       initGraph();
+      checkDeepLink();
     }
 
     function setupEventListeners() {
@@ -777,7 +1116,7 @@
       document.querySelectorAll('.fund-chip').forEach(chip => {
         chip.addEventListener('click', () => {
           document.getElementById('spider-input').value = chip.dataset.fund;
-          startSpider();
+          startSpider(chip.dataset.orgType);
         });
       });
 
@@ -796,8 +1135,124 @@
       });
     }
 
+    let currentTargetId = null;
+    let currentTargetName = null;
+    let currentGraphDepth = 2; // default depth used by loadGraph
+
+    // "More" button - expand graph depth
+    document.getElementById('graph-more-btn').addEventListener('click', loadMore);
+
+    async function loadMore() {
+      if (!currentTargetId) return;
+
+      const btn = document.getElementById('graph-more-btn');
+      const nextDepth = currentGraphDepth + 1;
+
+      if (nextDepth > 3) {
+        btn.disabled = true;
+        btn.textContent = 'Max depth reached';
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '+ Loading...';
+
+      try {
+        const response = await fetch(`${API_BASE}/api/spider/graph?orgId=${currentTargetId}&depth=${nextDepth}`);
+        if (!response.ok) throw new Error('Failed to load more');
+
+        const data = await response.json();
+        const nodes = data.graph?.nodes || data.nodes || [];
+        const edges = data.graph?.edges || data.edges || [];
+        const beforeCount = window.cy ? window.cy.nodes().length : 0;
+        mergeGraph(nodes, edges);
+        const afterCount = window.cy.nodes().length;
+        const added = afterCount - beforeCount;
+
+        currentGraphDepth = nextDepth;
+
+        if (nextDepth >= 3) {
+          btn.disabled = true;
+          btn.innerHTML = `Max depth reached <span class="node-count">${afterCount} nodes</span>`;
+        } else {
+          btn.disabled = false;
+          btn.innerHTML = `+ More <span class="node-count">${afterCount} nodes</span>`;
+        }
+      } catch (error) {
+        console.error('Load more error:', error);
+        btn.disabled = false;
+        btn.innerHTML = '+ More <span class="node-count">retry</span>';
+      }
+    }
+
+    function updateMoreButton() {
+      const btn = document.getElementById('graph-more-btn');
+      if (!currentTargetId || !window.cy || window.cy.nodes().length === 0) {
+        btn.classList.remove('visible');
+        return;
+      }
+      const count = window.cy.nodes().length;
+      btn.classList.add('visible');
+      btn.disabled = currentGraphDepth >= 3;
+      if (currentGraphDepth >= 3) {
+        btn.innerHTML = `Max depth reached <span class="node-count">${count} nodes</span>`;
+      } else {
+        btn.innerHTML = `+ More <span class="node-count">${count} nodes</span>`;
+      }
+    }
+
+    // Update the graph title bar and browser URL
+    function setGraphTitle(name, type, entityId) {
+      currentTargetName = name;
+      const titleBar = document.getElementById('graph-title-bar');
+      document.getElementById('graph-title-name').textContent = name;
+      document.getElementById('graph-title-type').textContent = formatType(type || 'organization');
+      titleBar.classList.add('active');
+
+      // Update URL for sharing (without reloading)
+      if (entityId) {
+        const url = new URL(window.location);
+        url.searchParams.set('org', entityId);
+        url.searchParams.set('name', name);
+        history.replaceState(null, '', url.toString());
+        document.title = `${name} | Org Spider | Bikini Bottom Bets`;
+      }
+    }
+
+    // Copy shareable link
+    document.getElementById('share-btn').addEventListener('click', () => {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.getElementById('share-btn');
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = 'Copy Link';
+          btn.classList.remove('copied');
+        }, 2000);
+      });
+    });
+
+    // Check URL params for deep-link on load
+    function checkDeepLink() {
+      const params = new URLSearchParams(window.location.search);
+      const orgId = params.get('org');
+      const name = params.get('name');
+      if (orgId) {
+        currentTargetId = orgId;
+        if (name) {
+          document.getElementById('spider-input').value = name;
+          setGraphTitle(name, 'organization', orgId);
+        }
+        loadGraph('organization', orgId);
+      } else if (name) {
+        // Pre-populate search field with company name and auto-trigger search
+        document.getElementById('spider-input').value = name;
+        startSpider();
+      }
+    }
+
     // Start spider job
-    async function startSpider() {
+    async function startSpider(orgTypeHint) {
       const input = document.getElementById('spider-input');
       const targetName = input.value.trim();
 
@@ -806,33 +1261,58 @@
         return;
       }
 
+      currentGraphDepth = 2;
+      document.getElementById('graph-more-btn').classList.remove('visible');
+
       const btn = document.getElementById('spider-btn');
       btn.disabled = true;
-      btn.textContent = 'Starting...';
+      btn.textContent = 'Crawling...';
 
-      // Show job status
+      // Show job status, reset stats
       document.getElementById('job-status').classList.add('active');
       document.getElementById('graph-empty').classList.add('hidden');
+      document.getElementById('stat-orgs').textContent = '0';
+      document.getElementById('stat-persons').textContent = '0';
+      document.getElementById('stat-rels').textContent = '0';
+      document.getElementById('progress-fill').style.width = '0%';
+      document.getElementById('progress-text').textContent = 'Creating job...';
 
       try {
-        const response = await fetch(`${API_BASE}/api/org-spider/research`, {
+        // Step 1: Create the job (returns immediately)
+        const crawlBody = {
+          targetType: 'organization',
+          targetName,
+          depth: selectedDepth,
+        };
+        if (orgTypeHint) crawlBody.orgType = orgTypeHint;
+
+        const response = await fetch(`${API_BASE}/api/spider/crawl`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            targetType: 'organization',
-            targetName,
-            depth: selectedDepth,
-          }),
+          body: JSON.stringify(crawlBody),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to start spider job');
+          throw new Error('Failed to create spider job');
         }
 
         const data = await response.json();
         currentJobId = data.jobId;
+        currentTargetId = data.targetId;
 
-        // Start polling for job status
+        // Set graph title and shareable URL
+        setGraphTitle(targetName, 'organization', data.targetId);
+
+        document.getElementById('progress-text').textContent = 'Starting crawl...';
+
+        // Step 2: Fire off the execute request (runs in background, browser keeps connection open)
+        fetch(`${API_BASE}/api/spider/execute`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobId: currentJobId }),
+        }).catch(err => console.warn('Execute request ended:', err.message));
+
+        // Step 3: Start polling for job status + real-time graph updates
         pollJobStatus();
 
       } catch (error) {
@@ -843,17 +1323,151 @@
       }
     }
 
-    // Poll job status
+    // Secondary spider: launch a spider from a node in the graph
+    let secondaryPollInterval = null;
+
+    async function startSpiderFromNode(name, entityType, entityId) {
+      // Find and disable the button that triggered this
+      const allBtns = document.querySelectorAll('.spider-from-btn');
+      allBtns.forEach(btn => { btn.disabled = true; btn.textContent = '🕷️ Spidering...'; });
+
+      // Show job status panel
+      document.getElementById('job-status').classList.add('active');
+      document.getElementById('progress-fill').style.width = '0%';
+      document.getElementById('progress-text').textContent = `Spidering ${name}...`;
+
+      try {
+        // Step 1: Create the job
+        const response = await fetch(`${API_BASE}/api/spider/crawl`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            targetType: entityType || 'organization',
+            targetName: name,
+            depth: selectedDepth,
+          }),
+        });
+
+        if (!response.ok) throw new Error('Failed to create spider job');
+
+        const data = await response.json();
+        const secondaryJobId = data.jobId;
+
+        // Step 2: Fire-and-forget execute
+        fetch(`${API_BASE}/api/spider/execute`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ jobId: secondaryJobId }),
+        }).catch(err => console.warn('Secondary execute ended:', err.message));
+
+        // Step 3: Poll status and merge results into existing graph
+        if (secondaryPollInterval) clearInterval(secondaryPollInterval);
+
+        secondaryPollInterval = setInterval(async () => {
+          try {
+            const statusRes = await fetch(`${API_BASE}/api/spider/status?jobId=${secondaryJobId}`);
+            if (!statusRes.ok) throw new Error('Status fetch failed');
+
+            const job = await statusRes.json();
+            updateJobStatus(job);
+
+            // Merge graph results
+            const targetId = data.targetId || entityId;
+            if (targetId) {
+              try {
+                const graphRes = await fetch(`${API_BASE}/api/spider/graph?orgId=${targetId}&depth=2`);
+                if (graphRes.ok) {
+                  const graphData = await graphRes.json();
+                  const nodes = graphData.graph?.nodes || graphData.nodes || [];
+                  const edges = graphData.graph?.edges || graphData.edges || [];
+                  if (nodes.length > 0) {
+                    mergeGraph(nodes, edges);
+                  }
+                }
+              } catch (_) { /* graph not ready yet */ }
+            }
+
+            if (job.status === 'completed' || job.status === 'failed') {
+              clearInterval(secondaryPollInterval);
+              secondaryPollInterval = null;
+
+              // Re-enable spider buttons
+              document.querySelectorAll('.spider-from-btn').forEach(btn => {
+                btn.disabled = false;
+                btn.textContent = '🕷️ Spider from here';
+              });
+
+              if (job.status === 'completed') {
+                document.getElementById('progress-text').textContent = `Spider from ${name} complete!`;
+                // Final full graph merge
+                if (data.targetId || entityId) {
+                  try {
+                    const finalRes = await fetch(`${API_BASE}/api/spider/graph?orgId=${data.targetId || entityId}&depth=2`);
+                    if (finalRes.ok) {
+                      const finalData = await finalRes.json();
+                      const nodes = finalData.graph?.nodes || finalData.nodes || [];
+                      const edges = finalData.graph?.edges || finalData.edges || [];
+                      if (nodes.length > 0) mergeGraph(nodes, edges);
+                    }
+                  } catch (_) {}
+                }
+              } else {
+                document.getElementById('progress-text').textContent = `Spider failed: ${job.error || 'Unknown error'}`;
+              }
+            }
+          } catch (err) {
+            console.error('Secondary poll error:', err);
+          }
+        }, 2000);
+
+      } catch (error) {
+        console.error('Spider-from-node error:', error);
+        alert('Failed to start spider from node: ' + error.message);
+        document.querySelectorAll('.spider-from-btn').forEach(btn => {
+          btn.disabled = false;
+          btn.textContent = '🕷️ Spider from here';
+        });
+      }
+    }
+
+    // Poll job status and load graph incrementally
     function pollJobStatus() {
       if (jobPollInterval) clearInterval(jobPollInterval);
 
+      let lastNodeCount = 0;
+
       jobPollInterval = setInterval(async () => {
         try {
-          const response = await fetch(`${API_BASE}/api/org-spider/job?id=${currentJobId}`);
+          const response = await fetch(`${API_BASE}/api/spider/status?jobId=${currentJobId}`);
           if (!response.ok) throw new Error('Failed to get job status');
 
           const job = await response.json();
           updateJobStatus(job);
+
+          // Load partial graph on each tick if we have a targetId
+          const targetId = job.targetId || currentTargetId;
+          if (targetId) {
+            try {
+              const graphResponse = await fetch(`${API_BASE}/api/spider/graph?orgId=${targetId}&depth=2`);
+              if (graphResponse.ok) {
+                const graphData = await graphResponse.json();
+                const nodes = graphData.graph?.nodes || graphData.nodes || [];
+                const edges = graphData.graph?.edges || graphData.edges || [];
+
+                if (nodes.length > 0) {
+                  // Use mergeGraph for incremental additions (no flash/reset)
+                  mergeGraph(nodes, edges);
+
+                  // Update node count in status
+                  if (nodes.length !== lastNodeCount) {
+                    lastNodeCount = nodes.length;
+                  }
+                }
+              }
+            } catch (graphErr) {
+              // Graph might not be ready yet, that's OK
+            }
+          }
 
           if (job.status === 'completed' || job.status === 'failed') {
             clearInterval(jobPollInterval);
@@ -863,8 +1477,14 @@
             document.getElementById('spider-btn').textContent = 'Start Spider';
 
             if (job.status === 'completed') {
-              // Load the graph for this entity
-              loadGraph('organization', job.targetId || currentJobId);
+              // Final full graph load
+              const targetId = job.targetId || currentTargetId;
+              if (targetId) {
+                loadGraph('organization', targetId);
+              }
+              document.getElementById('progress-text').textContent = 'Crawl complete!';
+            } else {
+              document.getElementById('progress-text').textContent = 'Crawl failed: ' + (job.error || 'Unknown error');
             }
           }
         } catch (error) {
@@ -890,14 +1510,14 @@
     // Load top funds from API
     async function loadTopFunds() {
       try {
-        const response = await fetch(`${API_BASE}/api/pe/top-funds?limit=10`);
+        const response = await fetch(`${API_BASE}/api/pe/top-funds`);
         if (!response.ok) throw new Error('Failed to load top funds');
 
         const data = await response.json();
-        renderTopFunds(data.funds || []);
+        const funds = data.funds || [];
+        renderTopFunds(funds);
       } catch (error) {
         console.error('Failed to load top funds:', error);
-        // Show placeholder
         document.getElementById('top-funds-list').innerHTML = `
           <div style="text-align: center; color: var(--text-muted); padding: 1rem;">
             <p>No funds loaded yet</p>
@@ -926,6 +1546,7 @@
             ${fund.ticker ? `<div class="fund-ticker">${fund.ticker}</div>` : ''}
           </div>
           <div class="fund-stats">
+            ${fund.aum ? `<div class="fund-aum">$${fmtNum(fund.aum)}</div>` : ''}
             ${fund.portfolioCount || 0} portfolio<br>
             ${fund.teamCount || 0} team
           </div>
@@ -933,17 +1554,29 @@
       `).join('');
     }
 
-    // Load graph data
+    // Load graph data (full replace for final load or direct navigation)
     async function loadGraph(entityType, entityId) {
       document.getElementById('graph-loading').classList.remove('hidden');
       document.getElementById('graph-empty').classList.add('hidden');
 
       try {
-        const response = await fetch(`${API_BASE}/api/graph?entityType=${entityType}&entityId=${entityId}&depth=2`);
+        const response = await fetch(`${API_BASE}/api/spider/graph?orgId=${entityId}&depth=2`);
         if (!response.ok) throw new Error('Failed to load graph');
 
         const data = await response.json();
-        renderGraph(data.nodes, data.edges);
+        const nodes = data.graph?.nodes || data.nodes || [];
+        const edges = data.graph?.edges || data.edges || [];
+
+        // Find the root node to set as title
+        const rootNode = nodes.find(n => n.data?.entityId === entityId || n.id === entityId);
+        if (rootNode) {
+          setGraphTitle(rootNode.label, rootNode.type, entityId);
+          document.getElementById('spider-input').value = rootNode.label;
+        }
+
+        currentGraphDepth = 2;
+        renderGraph(nodes, edges);
+        updateMoreButton();
 
       } catch (error) {
         console.error('Graph load error:', error);

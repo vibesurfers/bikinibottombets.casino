@@ -4,6 +4,10 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
+    "api/spider/execute.ts": {
+      "includeFiles": "api/lib/**",
+      "maxDuration": 120
+    },
     "api/spider/**/*.ts": {
       "includeFiles": "api/lib/**",
       "maxDuration": 60
@@ -14,6 +18,14 @@
     },
     "api/algolia/**/*.ts": {
       "includeFiles": "api/lib/**",
+      "maxDuration": 60
+    },
+    "api/mindmap/execute.ts": {
+      "includeFiles": "api/lib/**,mindmap/lib/**,mindmap/workflows/**,mindmap/tools/**,mindmap/agents/**",
+      "maxDuration": 120
+    },
+    "api/mindmap/**/*.ts": {
+      "includeFiles": "api/lib/**,mindmap/lib/**,mindmap/tools/**,mindmap/agents/**",
       "maxDuration": 60
     },
     "api/**/*.ts": {
@@ -33,7 +45,8 @@
     { "source": "/pipeline.html", "destination": "/pipeline", "permanent": true },
     { "source": "/mobile-setup.html", "destination": "/mobile-setup", "permanent": true },
     { "source": "/vision/index.html", "destination": "/vision", "permanent": true },
-    { "source": "/org-spider.html", "destination": "/org-spider", "permanent": true }
+    { "source": "/org-spider.html", "destination": "/org-spider", "permanent": true },
+    { "source": "/mindmap.html", "destination": "/mindmap", "permanent": true }
   ],
   "rewrites": [
     { "source": "/skill.md", "destination": "/api/skill" },

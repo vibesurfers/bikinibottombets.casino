@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mindmap | Bikini Bottom Bets</title>
+  <meta name="description" content="Interactive investor network graph - explore connections between VCs, founders, and companies.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="portal.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.28.1/cytoscape.min.js"></script>
+  <style>
+    .mindmap-dashboard {
+      max-width: 1600px;
+    }
+
+    .mindmap-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .mindmap-subtitle {
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    /* Search Section */
+    .mindmap-search {
+      margin-bottom: 1.5rem;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .search-input-wrapper {
+      flex: 1;
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 1rem 1rem 1rem 3.5rem;
+      background: var(--bg-card);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--green);
+      box-shadow: 0 0 0 3px rgba(0, 210, 106, 0.1);
+    }
+
+    .search-btn {
+      padding: 1rem 2rem;
+      background: var(--green);
+      border: none;
+      border-radius: 12px;
+      color: var(--bg-dark);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .search-btn:hover {
+      background: #00ff80;
+      transform: translateY(-2px);
+    }
+
+    .search-btn:disabled {
+      background: var(--border);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Autocomplete dropdown */
+    .search-autocomplete {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 0 0 12px 12px;
+      max-height: 240px;
+      overflow-y: auto;
+      z-index: 50;
+      display: none;
+    }
+
+    .search-autocomplete.visible {
+      display: block;
+    }
+
+    .autocomplete-item {
+      padding: 0.75rem 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      transition: background 0.15s;
+    }
+
+    .autocomplete-item:hover {
+      background: rgba(0, 210, 106, 0.1);
+    }
+
+    .autocomplete-icon {
+      font-size: 1.1rem;
+      width: 1.5rem;
+      text-align: center;
+    }
+
+    .autocomplete-name {
+      font-weight: 600;
+    }
+
+    .autocomplete-type {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-left: auto;
+    }
+
+    /* Controls row */
+    .controls-row {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .depth-selector {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .depth-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .depth-select {
+      padding: 0.4rem 0.75rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .confidence-slider {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .confidence-label {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    .confidence-range {
+      width: 100px;
+      accent-color: var(--green);
+    }
+
+    .confidence-value {
+      color: var(--text);
+      font-size: 0.85rem;
+      font-weight: 600;
+      width: 2.5rem;
+    }
+
+    /* Quick Select Chips */
+    .quick-select {
+      margin-bottom: 1.5rem;
+    }
+
+    .quick-select-title {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+    }
+
+    .network-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .network-chip {
+      padding: 0.5rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .network-chip:hover {
+      border-color: var(--green);
+      background: rgba(0, 210, 106, 0.1);
+    }
+
+    .network-chip.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: var(--bg-dark);
+    }
+
+    .network-chip--paypal { border-color: rgba(239, 68, 68, 0.3); }
+    .network-chip--paypal:hover, .network-chip--paypal.active { border-color: #ef4444; background: rgba(239, 68, 68, 0.15); }
+    .network-chip--paypal.active { background: #ef4444; color: white; }
+
+    .network-chip--yc { border-color: rgba(249, 115, 22, 0.3); }
+    .network-chip--yc:hover, .network-chip--yc.active { border-color: #f97316; background: rgba(249, 115, 22, 0.15); }
+    .network-chip--yc.active { background: #f97316; color: white; }
+
+    .network-chip--ai { border-color: rgba(59, 130, 246, 0.3); }
+    .network-chip--ai:hover, .network-chip--ai.active { border-color: #3b82f6; background: rgba(59, 130, 246, 0.15); }
+    .network-chip--ai.active { background: #3b82f6; color: white; }
+
+    .network-chip--vc { border-color: rgba(147, 51, 234, 0.3); }
+    .network-chip--vc:hover, .network-chip--vc.active { border-color: #9333ea; background: rgba(147, 51, 234, 0.15); }
+    .network-chip--vc.active { background: #9333ea; color: white; }
+
+    .network-chip--full { border-color: rgba(0, 210, 106, 0.3); }
+    .network-chip--full:hover, .network-chip--full.active { border-color: #00d26a; background: rgba(0, 210, 106, 0.15); }
+    .network-chip--full.active { background: #00d26a; color: var(--bg-dark); }
+
+    /* Edge Filter Toggles */
+    .edge-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .edge-filter {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.6rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .edge-filter:hover {
+      border-color: var(--text-muted);
+    }
+
+    .edge-filter.active {
+      border-color: var(--green);
+      background: rgba(0, 210, 106, 0.08);
+    }
+
+    .edge-filter-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .edge-filter-label {
+      color: var(--text-muted);
+    }
+
+    .edge-filter.active .edge-filter-label {
+      color: var(--text);
+    }
+
+    /* Main Layout */
+    .mindmap-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 2rem;
+      min-height: 600px;
+    }
+
+    /* Graph Container */
+    .graph-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      position: relative;
+      min-height: 800px;
+    }
+
+    #cy {
+      width: 100%;
+      height: 800px;
+      border-radius: 12px;
+    }
+
+    .graph-controls {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 10;
+    }
+
+    .graph-control-btn {
+      width: 40px;
+      height: 40px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1.25rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .graph-control-btn:hover {
+      border-color: var(--green);
+      background: rgba(0, 210, 106, 0.1);
+    }
+
+    .graph-legend {
+      position: absolute;
+      bottom: 1rem;
+      left: 1rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      z-index: 10;
+    }
+
+    .legend-title {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .legend-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.8rem;
+    }
+
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .legend-dot.person { background: #06b6d4; }
+    .legend-dot.investor { background: #8b5cf6; }
+    .legend-dot.org { background: #22c55e; }
+    .legend-dot.fund { background: #9333ea; }
+    .legend-dot.vc-fund { background: #3b82f6; }
+    .legend-dot.accelerator { background: #f97316; }
+
+    .graph-loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      color: var(--text-muted);
+    }
+
+    .graph-empty {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .graph-empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    /* Details Panel */
+    .details-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .panel-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .panel-title {
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Stats Card */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .stat-box {
+      text-align: center;
+      padding: 0.75rem;
+      background: var(--bg-dark);
+      border-radius: 8px;
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    /* Top Hubs */
+    .hub-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: color 0.15s;
+    }
+
+    .hub-item:hover {
+      color: var(--green);
+    }
+
+    .hub-item:last-child {
+      border-bottom: none;
+    }
+
+    .hub-name {
+      font-weight: 600;
+    }
+
+    .hub-count {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    /* Entity Details Panel */
+    .entity-details {
+      display: none;
+    }
+
+    .entity-details.active {
+      display: block;
+    }
+
+    .entity-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .entity-icon {
+      font-size: 2rem;
+    }
+
+    .entity-info h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .entity-type {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+
+    .entity-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .meta-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+    }
+
+    .meta-label {
+      color: var(--text-muted);
+    }
+
+    .meta-value {
+      font-weight: 600;
+    }
+
+    .entity-description {
+      font-size: 0.85rem;
+      line-height: 1.5;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .entity-description.clamped {
+      display: -webkit-box;
+      -webkit-line-clamp: 4;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .entity-description-toggle {
+      font-size: 0.8rem;
+      color: var(--green);
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0;
+      margin-top: 0.25rem;
+    }
+
+    .entity-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .entity-tag {
+      padding: 0.2rem 0.6rem;
+      background: rgba(0, 210, 106, 0.1);
+      border: 1px solid rgba(0, 210, 106, 0.25);
+      border-radius: 12px;
+      font-size: 0.75rem;
+      color: var(--green);
+    }
+
+    .detail-section {
+      margin-bottom: 1rem;
+    }
+
+    .detail-section-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .rel-group {
+      margin-bottom: 1rem;
+    }
+
+    .rel-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .rel-item:hover {
+      color: var(--green);
+    }
+
+    .rel-item:last-child {
+      border-bottom: none;
+    }
+
+    .rel-item-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-left: auto;
+      white-space: nowrap;
+    }
+
+    .spider-from-btn {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: transparent;
+      border: 2px solid var(--green);
+      border-radius: 10px;
+      color: var(--green);
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 0.5rem;
+    }
+
+    .spider-from-btn:hover {
+      background: rgba(0, 210, 106, 0.1);
+      transform: translateY(-1px);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+      .mindmap-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .details-panel {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .search-row {
+        flex-direction: column;
+      }
+
+      .details-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .controls-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .network-chips {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 0.5rem;
+      }
+
+      .network-chip {
+        flex-shrink: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <a href="/" class="nav-brand">
+      <span class="lobster">🦞</span> BIKINI BOTTOM BETS
+    </a>
+    <div class="nav-links">
+      <a href="/vision" class="nav-text">Vision</a>
+      <a href="/dashboard" class="nav-text">Newsfeed</a>
+      <a href="/org-spider" class="nav-text">Org Spider</a>
+      <a href="/mindmap" class="nav-text active">Mindmap</a>
+      <a href="/docs" class="nav-text">Docs</a>
+    </div>
+    <div class="user-info">
+      <div class="user-badge" id="user-badge">
+        <span class="icon">🦞</span>
+        <span id="user-name">Loading...</span>
+      </div>
+      <button class="btn-logout" id="logout-btn">Logout</button>
+    </div>
+  </nav>
+
+  <main class="dashboard mindmap-dashboard">
+    <header class="mindmap-header">
+      <h1 class="dashboard-title">Investor Mindmap</h1>
+      <p class="mindmap-subtitle">Explore the network of VCs, founders, and companies</p>
+    </header>
+
+    <!-- Search -->
+    <div class="mindmap-search">
+      <div class="search-row">
+        <div class="search-input-wrapper">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="Search actors... (e.g., Peter Thiel, Y Combinator, Stripe)"
+            autocomplete="off"
+          >
+          <div class="search-autocomplete" id="search-autocomplete"></div>
+        </div>
+        <button class="search-btn" id="search-btn">Load Graph</button>
+      </div>
+      <div class="controls-row">
+        <div class="depth-selector">
+          <span class="depth-label">Depth:</span>
+          <select class="depth-select" id="depth-select">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+        </div>
+        <div class="confidence-slider">
+          <span class="confidence-label">Confidence:</span>
+          <input type="range" class="confidence-range" id="confidence-slider" min="0" max="100" value="0" step="5">
+          <span class="confidence-value" id="confidence-value">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Select Chips -->
+    <div class="quick-select">
+      <div class="quick-select-title">Quick Select Networks</div>
+      <div class="network-chips">
+        <div class="network-chip network-chip--paypal" data-slug="peter-thiel" data-label="PayPal Mafia">PayPal Mafia</div>
+        <div class="network-chip network-chip--yc" data-slug="y-combinator" data-label="YC Network">YC Network</div>
+        <div class="network-chip network-chip--ai" data-slug="openai" data-label="AI Ecosystem">AI Ecosystem</div>
+        <div class="network-chip network-chip--vc" data-slug="sequoia-capital" data-label="VC Networks">Sequoia Capital</div>
+        <div class="network-chip network-chip--vc" data-slug="a16z" data-label="a16z">a16z</div>
+        <div class="network-chip network-chip--vc" data-slug="founders-fund" data-label="Founders Fund">Founders Fund</div>
+        <div class="network-chip network-chip--full" data-action="full" data-label="Full Network">Full Network</div>
+      </div>
+    </div>
+
+    <!-- Edge Category Filters -->
+    <div class="quick-select">
+      <div class="quick-select-title">Edge Filters</div>
+      <div class="edge-filters" id="edge-filters">
+        <div class="edge-filter active" data-category="invested_in">
+          <span class="edge-filter-dot" style="background:#22c55e"></span>
+          <span class="edge-filter-label">Investments</span>
+        </div>
+        <div class="edge-filter active" data-category="co_founded">
+          <span class="edge-filter-dot" style="background:#ef4444"></span>
+          <span class="edge-filter-label">Founded</span>
+        </div>
+        <div class="edge-filter active" data-category="executive_at">
+          <span class="edge-filter-dot" style="background:#06b6d4"></span>
+          <span class="edge-filter-label">Executive</span>
+        </div>
+        <div class="edge-filter active" data-category="board_member_at">
+          <span class="edge-filter-dot" style="background:#ec4899"></span>
+          <span class="edge-filter-label">Board</span>
+        </div>
+        <div class="edge-filter active" data-category="partner_at">
+          <span class="edge-filter-dot" style="background:#8b5cf6"></span>
+          <span class="edge-filter-label">Partner</span>
+        </div>
+        <div class="edge-filter active" data-category="graduated_from">
+          <span class="edge-filter-dot" style="background:#f97316"></span>
+          <span class="edge-filter-label">Graduated</span>
+        </div>
+        <div class="edge-filter active" data-category="acquired">
+          <span class="edge-filter-dot" style="background:#f59e0b"></span>
+          <span class="edge-filter-label">Acquired</span>
+        </div>
+        <div class="edge-filter active" data-category="alumni_of">
+          <span class="edge-filter-dot" style="background:#f97316"></span>
+          <span class="edge-filter-label">Alumni</span>
+        </div>
+        <div class="edge-filter active" data-category="employee_at">
+          <span class="edge-filter-dot" style="background:#94a3b8"></span>
+          <span class="edge-filter-label">Employee</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="mindmap-layout">
+      <!-- Graph Container -->
+      <div class="graph-container">
+        <div id="cy"></div>
+
+        <!-- Graph Controls -->
+        <div class="graph-controls">
+          <button class="graph-control-btn" id="zoom-in" title="Zoom In">+</button>
+          <button class="graph-control-btn" id="zoom-out" title="Zoom Out">-</button>
+          <button class="graph-control-btn" id="fit-graph" title="Fit to Screen">&#x229E;</button>
+          <button class="graph-control-btn" id="reset-layout" title="Reset Layout">&#x21BB;</button>
+        </div>
+
+        <!-- Legend -->
+        <div class="graph-legend">
+          <div class="legend-title">Node Types</div>
+          <div class="legend-items">
+            <div class="legend-item"><span class="legend-dot person"></span> Person</div>
+            <div class="legend-item"><span class="legend-dot investor"></span> Investor</div>
+            <div class="legend-item"><span class="legend-dot org"></span> Company</div>
+            <div class="legend-item"><span class="legend-dot vc-fund"></span> VC Fund</div>
+            <div class="legend-item"><span class="legend-dot fund"></span> PE/Fund</div>
+            <div class="legend-item"><span class="legend-dot accelerator"></span> Accelerator</div>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        <div class="graph-loading hidden" id="graph-loading">
+          <div class="spinner"></div>
+          <span>Loading graph...</span>
+        </div>
+
+        <!-- Empty State -->
+        <div class="graph-empty" id="graph-empty">
+          <div class="graph-empty-icon">🕸️</div>
+          <p>Search for an actor or select a network above</p>
+          <p style="font-size: 0.85rem; margin-top: 0.5rem;">Double-click any node to expand its connections</p>
+        </div>
+      </div>
+
+      <!-- Details Panel -->
+      <div class="details-panel">
+        <!-- Stats Card -->
+        <div class="panel-card">
+          <div class="panel-title">📊 Graph Stats</div>
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-value" id="stat-nodes">0</div>
+              <div class="stat-label">Nodes</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-value" id="stat-edges">0</div>
+              <div class="stat-label">Edges</div>
+            </div>
+          </div>
+          <div class="detail-section-title">Top Hubs</div>
+          <div id="top-hubs-list">
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Load a graph to see hubs</p>
+          </div>
+        </div>
+
+        <!-- Entity Details -->
+        <div class="panel-card entity-details" id="entity-details">
+          <div class="panel-title">📋 Entity Details</div>
+          <div class="entity-header">
+            <span class="entity-icon" id="entity-icon">🏢</span>
+            <div class="entity-info">
+              <h3 id="entity-name">Select a node</h3>
+              <div class="entity-type" id="entity-type">-</div>
+            </div>
+          </div>
+          <div id="entity-rich-body"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/mindmap-graph.js"></script>
+  <script>
+    const API_BASE = '';
+    let currentUser = null;
+    let searchTimeout = null;
+
+    // All edge categories mapped to their expanded list
+    const categoryGroups = {
+      invested_in: ['invested_in', 'co_invested', 'led_round', 'limited_partner_of'],
+      co_founded: ['co_founded', 'founded'],
+      executive_at: ['executive_at', 'employee_at'],
+      board_member_at: ['board_member_at'],
+      partner_at: ['partner_at', 'advisor_to', 'mentor_of'],
+      graduated_from: ['graduated_from', 'participated_in_batch'],
+      acquired: ['acquired', 'merged_with', 'subsidiary_of', 'strategic_partner'],
+      alumni_of: ['alumni_of', 'classmate_of'],
+      employee_at: ['employee_at'],
+    };
+
+    // Auth check
+    function checkAuth() {
+      const agent = localStorage.getItem('bbb_agent');
+      const human = localStorage.getItem('bbb_human');
+
+      if (agent) {
+        currentUser = JSON.parse(agent);
+        currentUser.type = 'agent';
+      } else if (human) {
+        currentUser = JSON.parse(human);
+        currentUser.type = 'human';
+      } else {
+        window.location.href = '/login';
+        return;
+      }
+
+      updateUserBadge();
+      init();
+    }
+
+    function updateUserBadge() {
+      const nameEl = document.getElementById('user-name');
+      const badge = document.getElementById('user-badge');
+
+      if (currentUser.type === 'agent') {
+        badge.querySelector('.icon').textContent = '🦞';
+        nameEl.textContent = currentUser.name || 'Agent';
+      } else {
+        badge.querySelector('.icon').textContent = '👤';
+        nameEl.textContent = currentUser.email || 'Human';
+      }
+    }
+
+    document.getElementById('logout-btn').addEventListener('click', () => {
+      localStorage.removeItem('bbb_agent');
+      localStorage.removeItem('bbb_human');
+      localStorage.removeItem('bbb_token');
+      window.location.href = '/login';
+    });
+
+    // Initialize
+    async function init() {
+      setupEventListeners();
+      initGraph();
+      checkDeepLink();
+    }
+
+    function setupEventListeners() {
+      // Search button
+      document.getElementById('search-btn').addEventListener('click', loadFromSearch);
+
+      // Enter key
+      document.getElementById('search-input').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          document.getElementById('search-autocomplete').classList.remove('visible');
+          loadFromSearch();
+        }
+      });
+
+      // Debounced autocomplete
+      document.getElementById('search-input').addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        const query = e.target.value.trim();
+        if (query.length < 2) {
+          document.getElementById('search-autocomplete').classList.remove('visible');
+          return;
+        }
+        searchTimeout = setTimeout(() => fetchAutocomplete(query), 250);
+      });
+
+      // Close autocomplete on blur
+      document.getElementById('search-input').addEventListener('blur', () => {
+        setTimeout(() => {
+          document.getElementById('search-autocomplete').classList.remove('visible');
+        }, 200);
+      });
+
+      // Network chips
+      document.querySelectorAll('.network-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          document.querySelectorAll('.network-chip').forEach(c => c.classList.remove('active'));
+          chip.classList.add('active');
+
+          if (chip.dataset.action === 'full') {
+            showFullGraph(500);
+          } else if (chip.dataset.slug) {
+            document.getElementById('search-input').value = chip.dataset.label;
+            loadGraphBySlug(chip.dataset.slug);
+          }
+        });
+      });
+
+      // Edge filters
+      document.querySelectorAll('.edge-filter').forEach(filter => {
+        filter.addEventListener('click', () => {
+          filter.classList.toggle('active');
+          applyEdgeFilters();
+        });
+      });
+
+      // Confidence slider
+      document.getElementById('confidence-slider').addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        document.getElementById('confidence-value').textContent = val + '%';
+        filterByConfidence(val / 100);
+      });
+
+      // Graph controls
+      document.getElementById('zoom-in').addEventListener('click', () => {
+        if (window.cy) window.cy.zoom(window.cy.zoom() * 1.2);
+      });
+      document.getElementById('zoom-out').addEventListener('click', () => {
+        if (window.cy) window.cy.zoom(window.cy.zoom() / 1.2);
+      });
+      document.getElementById('fit-graph').addEventListener('click', () => {
+        if (window.cy) window.cy.fit(undefined, 50);
+      });
+      document.getElementById('reset-layout').addEventListener('click', () => {
+        if (window.cy) runLayout();
+      });
+    }
+
+    // Autocomplete search
+    async function fetchAutocomplete(query) {
+      try {
+        const response = await fetch(`${API_BASE}/api/mindmap/actors?query=${encodeURIComponent(query)}&limit=6`);
+        if (!response.ok) return;
+
+        const result = await response.json();
+        const actors = result.actors || result;
+        const dropdown = document.getElementById('search-autocomplete');
+
+        if (!actors || actors.length === 0) {
+          dropdown.classList.remove('visible');
+          return;
+        }
+
+        dropdown.innerHTML = actors.map(actor => {
+          const icon = actor.category === 'person' ? '👤' :
+            actor.subtype === 'vc_fund' ? '🚀' :
+            actor.subtype === 'accelerator' ? '🎓' :
+            actor.category === 'fund' ? '💰' : '🏢';
+          const type = formatType(actor.subtype || actor.category);
+          return `<div class="autocomplete-item" data-slug="${escapeHtml(actor.slug)}">
+            <span class="autocomplete-icon">${icon}</span>
+            <span class="autocomplete-name">${escapeHtml(actor.canonicalName)}</span>
+            <span class="autocomplete-type">${type}</span>
+          </div>`;
+        }).join('');
+
+        // Click handlers
+        dropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+          item.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            const slug = item.dataset.slug;
+            const name = item.querySelector('.autocomplete-name').textContent;
+            document.getElementById('search-input').value = name;
+            dropdown.classList.remove('visible');
+            loadGraphBySlug(slug);
+          });
+        });
+
+        dropdown.classList.add('visible');
+      } catch (err) {
+        console.error('Autocomplete error:', err);
+      }
+    }
+
+    // Load graph from search input
+    async function loadFromSearch() {
+      const query = document.getElementById('search-input').value.trim();
+      if (!query) return;
+
+      // Try to find actor by slug-ifying the query
+      const slug = query.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+      await loadGraphBySlug(slug);
+    }
+
+    // Load graph by slug
+    async function loadGraphBySlug(slug) {
+      document.getElementById('graph-loading').classList.remove('hidden');
+      document.getElementById('graph-empty').classList.add('hidden');
+
+      const depth = document.getElementById('depth-select').value;
+
+      try {
+        const response = await fetch(`${API_BASE}/api/mindmap/graph?slug=${encodeURIComponent(slug)}&depth=${depth}&hubScores=true`);
+
+        if (response.status === 404) {
+          // Try as a search query
+          const searchRes = await fetch(`${API_BASE}/api/mindmap/actors?query=${encodeURIComponent(document.getElementById('search-input').value)}&limit=1`);
+          if (searchRes.ok) {
+            const searchResult = await searchRes.json();
+            const actors = searchResult.actors || searchResult;
+            if (actors && actors.length > 0) {
+              const actor = actors[0];
+              const retryRes = await fetch(`${API_BASE}/api/mindmap/graph?slug=${encodeURIComponent(actor.slug)}&depth=${depth}&hubScores=true`);
+              if (retryRes.ok) {
+                const data = await retryRes.json();
+                renderGraph(data.nodes || [], data.edges || []);
+                updateStatsPanel(data.stats);
+                updateURL(actor.slug, depth);
+                document.getElementById('graph-loading').classList.add('hidden');
+                return;
+              }
+            }
+          }
+          alert('Actor not found. Try a different name.');
+          document.getElementById('graph-loading').classList.add('hidden');
+          return;
+        }
+
+        if (!response.ok) throw new Error('Failed to load graph');
+
+        const data = await response.json();
+        renderGraph(data.nodes || [], data.edges || []);
+        updateStatsPanel(data.stats);
+        updateURL(slug, depth);
+      } catch (error) {
+        console.error('Graph load error:', error);
+      } finally {
+        document.getElementById('graph-loading').classList.add('hidden');
+      }
+    }
+
+    // Apply edge category filters
+    function applyEdgeFilters() {
+      const activeCategories = [];
+      document.querySelectorAll('.edge-filter.active').forEach(f => {
+        const cat = f.dataset.category;
+        if (categoryGroups[cat]) {
+          activeCategories.push(...categoryGroups[cat]);
+        } else {
+          activeCategories.push(cat);
+        }
+      });
+
+      if (window.cy) {
+        window.cy.edges().forEach(edge => {
+          const cat = edge.data('category');
+          if (activeCategories.includes(cat)) {
+            edge.removeClass('edge-hidden');
+          } else {
+            edge.addClass('edge-hidden');
+          }
+        });
+      }
+    }
+
+    // Update URL for deep linking
+    function updateURL(slug, depth) {
+      const url = new URL(window.location);
+      url.searchParams.set('actor', slug);
+      url.searchParams.set('depth', depth);
+      history.replaceState(null, '', url.toString());
+    }
+
+    // Check URL params for deep link
+    function checkDeepLink() {
+      const params = new URLSearchParams(window.location.search);
+      const actor = params.get('actor');
+      const depth = params.get('depth');
+
+      if (depth) {
+        document.getElementById('depth-select').value = depth;
+      }
+
+      if (actor) {
+        document.getElementById('search-input').value = actor.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        loadGraphBySlug(actor);
+      }
+    }
+
+    // Helper - format type
+    function formatType(type) {
+      if (!type) return '';
+      return type.split('_').map(word =>
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ');
+    }
+
+    // Helper - escape HTML
+    function escapeHtml(text) {
+      if (!text) return '';
+      const div = document.createElement('div');
+      div.appendChild(document.createTextNode(String(text)));
+      return div.innerHTML;
+    }
+
+    // Initialize on load
+    checkAuth();
+  </script>
+</body>
+</html>
