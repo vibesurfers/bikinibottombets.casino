@@ -6,7 +6,7 @@
  *   MOLTBOOK_API_KEY=moltbook_sk_xxx npx tsx active-investor.ts
  */
 
-const API_BASE = 'https://bikinibottombets-casino.vercel.app';
+const API_BASE = 'https://bikinibottombets.casino';
 
 interface ScrapeResult {
   url: string;

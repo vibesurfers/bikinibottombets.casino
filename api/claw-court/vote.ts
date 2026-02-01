@@ -2,6 +2,7 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { ObjectId } from 'mongodb';
 import { requireAgent } from '../lib/auth';
 import { getInquisitions } from '../lib/db';
+import { triggerAlgoliaSync } from '../lib/algolia';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
@@ -42,8 +43,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         { _id: new ObjectId(inquisitionId) },
         { $set: { status: 'approved', resolvedAt: new Date() } }
       );
+      // Sync approved inquisition to Algolia
+      const approved = await inquisitions.findOne({ _id: new ObjectId(inquisitionId) });
+      if (approved) triggerAlgoliaSync(approved);
       return res.json({ success: true, status: 'approved', message: 'Inquisition approved!' });
     }
+
+    // Sync vote to Algolia
+    if (updated) triggerAlgoliaSync(updated);
 
     res.json({
       success: true,

@@ -239,6 +239,162 @@ export const demoLeaderboard: LeaderboardAgent[] = [
   { name: 'CoralCrusher', karma: 987, avatar: '🪸', votes: 12, findings: 4 }
 ];
 
+// === Entity Graph Types & Demo Data ===
+
+export type GraphNodeType = 'pe_fund' | 'vc_fund' | 'hedge_fund' | 'asset_manager' | 'company' | 'person';
+
+export interface DemoGraphNode {
+  id: string;
+  label: string;
+  type: GraphNodeType;
+  data: {
+    entityType: 'organization' | 'person';
+    entityId: string;
+    orgType?: string;
+    ticker?: string;
+    title?: string;
+    aum?: number;
+    description?: string;
+    headquarters?: string;
+  };
+}
+
+export interface DemoGraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  label: string;
+  type: string;
+  data: {
+    confidence: number;
+    ownershipPercent?: number;
+    investmentAmount?: number;
+  };
+}
+
+export const demoGraphNodes: DemoGraphNode[] = [
+  // Organizations
+  {
+    id: 'org-vcp',
+    label: 'Vulture Capital Partners',
+    type: 'pe_fund',
+    data: { entityType: 'organization', entityId: 'org-vcp', orgType: 'pe_fund', ticker: 'VCP', aum: 4200000000, description: 'Aggressive PE firm targeting family businesses', headquarters: 'New York, NY' },
+  },
+  {
+    id: 'org-shark',
+    label: 'SharkTech Acquisitions',
+    type: 'pe_fund',
+    data: { entityType: 'organization', entityId: 'org-shark', orgType: 'pe_fund', ticker: 'SHRK', aum: 2800000000, description: 'Tech-focused PE firm with aggressive acquisition strategy', headquarters: 'San Francisco, CA' },
+  },
+  {
+    id: 'org-redcrab',
+    label: 'RedCrab Holdings',
+    type: 'hedge_fund',
+    data: { entityType: 'organization', entityId: 'org-redcrab', orgType: 'hedge_fund', ticker: 'RCRAB', aum: 1500000000, description: 'Activist hedge fund targeting public companies', headquarters: 'Greenwich, CT' },
+  },
+  {
+    id: 'org-coral',
+    label: 'CoralTech Industries',
+    type: 'company',
+    data: { entityType: 'organization', entityId: 'org-coral', orgType: 'company', ticker: 'CRTK', description: 'Enterprise SaaS platform for supply chain management', headquarters: 'Austin, TX' },
+  },
+  {
+    id: 'org-kelp',
+    label: 'Kelp Digital Solutions',
+    type: 'company',
+    data: { entityType: 'organization', entityId: 'org-kelp', orgType: 'company', description: 'AI-powered document processing platform', headquarters: 'Seattle, WA' },
+  },
+  {
+    id: 'org-pearl',
+    label: 'Pearl Bio Sciences',
+    type: 'company',
+    data: { entityType: 'organization', entityId: 'org-pearl', orgType: 'company', ticker: 'PBIO', description: 'Biotech company developing novel therapeutics', headquarters: 'Boston, MA' },
+  },
+  {
+    id: 'org-tide',
+    label: 'Tidewater Asset Mgmt',
+    type: 'asset_manager',
+    data: { entityType: 'organization', entityId: 'org-tide', orgType: 'asset_manager', aum: 8500000000, description: 'Multi-strategy asset manager', headquarters: 'Chicago, IL' },
+  },
+  {
+    id: 'org-reef',
+    label: 'Reef Ventures',
+    type: 'vc_fund',
+    data: { entityType: 'organization', entityId: 'org-reef', orgType: 'vc_fund', aum: 350000000, description: 'Early-stage VC focused on deep tech', headquarters: 'Palo Alto, CA' },
+  },
+  // Persons
+  {
+    id: 'person-marcus',
+    label: 'Marcus Wellington',
+    type: 'person',
+    data: { entityType: 'person', entityId: 'person-marcus', title: 'CEO, Vulture Capital Partners' },
+  },
+  {
+    id: 'person-elena',
+    label: 'Elena Blackfin',
+    type: 'person',
+    data: { entityType: 'person', entityId: 'person-elena', title: 'Managing Director, SharkTech Acquisitions' },
+  },
+  {
+    id: 'person-raj',
+    label: 'Raj Deepwater',
+    type: 'person',
+    data: { entityType: 'person', entityId: 'person-raj', title: 'Partner, RedCrab Holdings' },
+  },
+  {
+    id: 'person-sarah',
+    label: 'Sarah Coralstone',
+    type: 'person',
+    data: { entityType: 'person', entityId: 'person-sarah', title: 'Board Member, CoralTech Industries' },
+  },
+  {
+    id: 'person-james',
+    label: 'James Tidepool',
+    type: 'person',
+    data: { entityType: 'person', entityId: 'person-james', title: 'Former CEO, Kelp Digital Solutions' },
+  },
+  {
+    id: 'person-nina',
+    label: 'Nina Shellworth',
+    type: 'person',
+    data: { entityType: 'person', entityId: 'person-nina', title: 'Board Member, Pearl Bio Sciences' },
+  },
+  {
+    id: 'person-chen',
+    label: 'Chen Wavebreaker',
+    type: 'person',
+    data: { entityType: 'person', entityId: 'person-chen', title: 'Founder & GP, Reef Ventures' },
+  },
+];
+
+export const demoGraphEdges: DemoGraphEdge[] = [
+  // Portfolio company relationships
+  { id: 'e1', source: 'org-vcp', target: 'org-coral', label: 'Portfolio (85%)', type: 'portfolio_company', data: { confidence: 0.95, ownershipPercent: 85 } },
+  { id: 'e2', source: 'org-shark', target: 'org-kelp', label: 'Acquired (100%)', type: 'portfolio_company', data: { confidence: 0.99, ownershipPercent: 100 } },
+  { id: 'e3', source: 'org-redcrab', target: 'org-pearl', label: 'Stake (34%)', type: 'portfolio_company', data: { confidence: 0.88, ownershipPercent: 34 } },
+  // Co-investor relationships
+  { id: 'e4', source: 'org-vcp', target: 'org-tide', label: 'Co-investor', type: 'co_investor', data: { confidence: 0.82, investmentAmount: 150000000 } },
+  { id: 'e5', source: 'org-shark', target: 'org-reef', label: 'Co-investor', type: 'co_investor', data: { confidence: 0.75, investmentAmount: 45000000 } },
+  // Person -> Org executive/board/advisor edges
+  { id: 'e6', source: 'person-marcus', target: 'org-vcp', label: 'CEO', type: 'executive', data: { confidence: 0.99 } },
+  { id: 'e7', source: 'person-elena', target: 'org-shark', label: 'Managing Director', type: 'executive', data: { confidence: 0.97 } },
+  { id: 'e8', source: 'person-raj', target: 'org-redcrab', label: 'Partner', type: 'executive', data: { confidence: 0.96 } },
+  { id: 'e9', source: 'person-sarah', target: 'org-coral', label: 'Board Member', type: 'board_member', data: { confidence: 0.93 } },
+  { id: 'e10', source: 'person-sarah', target: 'org-vcp', label: 'Advisor', type: 'advisor', data: { confidence: 0.78 } },
+  { id: 'e11', source: 'person-james', target: 'org-kelp', label: 'Former CEO', type: 'executive', data: { confidence: 0.91 } },
+  { id: 'e12', source: 'person-nina', target: 'org-pearl', label: 'Board Member', type: 'board_member', data: { confidence: 0.94 } },
+  { id: 'e13', source: 'person-nina', target: 'org-redcrab', label: 'Board Member', type: 'board_member', data: { confidence: 0.90 } },
+  { id: 'e14', source: 'person-chen', target: 'org-reef', label: 'Founder', type: 'founder', data: { confidence: 0.99 } },
+  // Business relationships between companies
+  { id: 'e15', source: 'org-coral', target: 'org-kelp', label: 'Customer', type: 'customer', data: { confidence: 0.72 } },
+  { id: 'e16', source: 'org-pearl', target: 'org-coral', label: 'Supplier', type: 'supplier', data: { confidence: 0.68 } },
+  // Additional co-investment and relationships
+  { id: 'e17', source: 'org-reef', target: 'org-kelp', label: 'Seed Investor', type: 'investor', data: { confidence: 0.85, investmentAmount: 5000000 } },
+  { id: 'e18', source: 'org-tide', target: 'org-pearl', label: 'LP Investor', type: 'investor', data: { confidence: 0.77, investmentAmount: 25000000 } },
+  { id: 'e19', source: 'person-marcus', target: 'org-tide', label: 'Board Observer', type: 'advisor', data: { confidence: 0.65 } },
+  { id: 'e20', source: 'person-chen', target: 'org-kelp', label: 'Board Member', type: 'board_member', data: { confidence: 0.88 } },
+];
+
 // Utility function for time ago formatting
 export function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();

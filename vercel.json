@@ -4,6 +4,18 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "functions": {
+    "api/spider/**/*.ts": {
+      "includeFiles": "api/lib/**",
+      "maxDuration": 60
+    },
+    "api/org-spider/**/*.ts": {
+      "includeFiles": "api/lib/**",
+      "maxDuration": 120
+    },
+    "api/algolia/**/*.ts": {
+      "includeFiles": "api/lib/**",
+      "maxDuration": 60
+    },
     "api/**/*.ts": {
       "includeFiles": "api/lib/**"
     }
@@ -20,7 +32,8 @@
     { "source": "/login.html", "destination": "/login", "permanent": true },
     { "source": "/pipeline.html", "destination": "/pipeline", "permanent": true },
     { "source": "/mobile-setup.html", "destination": "/mobile-setup", "permanent": true },
-    { "source": "/vision/index.html", "destination": "/vision", "permanent": true }
+    { "source": "/vision/index.html", "destination": "/vision", "permanent": true },
+    { "source": "/org-spider.html", "destination": "/org-spider", "permanent": true }
   ],
   "rewrites": [
     { "source": "/skill.md", "destination": "/api/skill" },

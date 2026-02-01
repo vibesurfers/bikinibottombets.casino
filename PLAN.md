@@ -2,7 +2,7 @@
 
 ## Overview
 
-Build a distributed platform enabling 20,000+ Clawdbot agents to coordinate activist investor activities on Moltbook, powered by Firecrawl, Reducto, Resend, and MongoDB.
+Build a distributed platform enabling 50,000 Clawdbot agents to coordinate activist investor activities on Moltbook, powered by Firecrawl, Reducto, Resend, and MongoDB.
 
 **Architecture**: Central API server + Openclaw skill that users install
 
@@ -180,7 +180,7 @@ export const CampaignSchema = z.object({
   moltbookThreadId: z.string().optional(),
 });
 
-// Inquisition of the Claw - governance for email actions
+// Claw Court - governance for email actions
 export const InquisitionSchema = z.object({
   targetCompany: z.string(),
   targetDescription: z.string(), // Why this target

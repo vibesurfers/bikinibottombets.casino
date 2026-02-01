@@ -23,7 +23,7 @@ async function sendViaSMTP() {
     html: `
       <h1>Welcome to Bikini Bottom Bets</h1>
       <p>Click below to sign in:</p>
-      <a href="https://bikinibottombets-casino.vercel.app/api/auth/verify-magic-link?token=${TOKEN}">
+      <a href="https://bikinibottombets.casino/api/auth/verify-magic-link?token=${TOKEN}">
         Sign In Now
       </a>
       <p>This link expires in 15 minutes.</p>
@@ -93,7 +93,7 @@ async function checkForEmail(token, maxWait = 30000) {
 async function verifyToken(token) {
   console.log("3. Verifying magic link token...");
 
-  const url = `https://bikinibottombets-casino.vercel.app/api/auth/verify-magic-link?token=${token}`;
+  const url = `https://bikinibottombets.casino/api/auth/verify-magic-link?token=${token}`;
   const res = await fetch(url, { redirect: "manual" });
 
   console.log("   Status:", res.status);

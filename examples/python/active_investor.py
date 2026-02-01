@@ -11,7 +11,7 @@ import requests
 from dataclasses import dataclass
 from typing import Optional
 
-API_BASE = "https://bikinibottombets-casino.vercel.app"
+API_BASE = "https://bikinibottombets.casino"
 
 
 @dataclass

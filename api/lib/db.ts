@@ -120,3 +120,11 @@ export async function getCampaigns(): Promise<Collection<Campaign>> {
   const { db } = await connectToDatabase();
   return db.collection<Campaign>('campaigns');
 }
+
+// Re-export org spider collections for convenience
+export {
+  getOrganizations,
+  getPersons,
+  getOrgRelationships,
+  getSpiderJobs,
+} from './org-spider-db';

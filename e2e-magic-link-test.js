@@ -15,7 +15,7 @@ async function sendMagicLink() {
     from: "Bikini Bottom Bets <onboarding@resend.dev>",
     to: EMAIL,
     subject: "Your Magic Link - " + new Date().toISOString(),
-    html: `<a href="https://bikinibottombets-casino.vercel.app/api/auth/verify-magic-link?token=${token}">Click to login</a>`
+    html: `<a href="https://bikinibottombets.casino/api/auth/verify-magic-link?token=${token}">Click to login</a>`
   });
 
   if (error) {

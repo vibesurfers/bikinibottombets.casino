@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
 
 export const BASE_URL = 'http://localhost:3002';
-export const API_BASE = 'https://bikinibottombets-casino.vercel.app';
+export const API_BASE = 'https://bikinibottombets.casino';
 
 // Mock data matching the actual API response structure
 export const mockAgent = {

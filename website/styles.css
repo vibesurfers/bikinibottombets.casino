@@ -153,7 +153,8 @@ body {
   align-items: center;
 }
 
-.nav-text {
+.nav-links a,
+a.nav-text {
   color: var(--text-muted);
   text-decoration: none;
   font-size: 0.9rem;
@@ -161,12 +162,15 @@ body {
   transition: color 0.2s;
 }
 
-.nav-text:hover,
-.nav-text.active {
+.nav-links a:hover,
+a.nav-text:hover,
+.nav-links a.active,
+a.nav-text.active {
   color: var(--green);
+  text-decoration: none;
 }
 
-.nav-brand {
+a.nav-brand {
   color: inherit;
   text-decoration: none;
 }
@@ -276,6 +280,14 @@ body {
 .hero-tagline {
   color: var(--green);
   font-weight: 600;
+}
+
+.hero-crustacean {
+  font-style: italic;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-top: 0.5rem;
+  opacity: 0.7;
 }
 
 /* Problem Section */
@@ -565,7 +577,119 @@ body {
   line-height: 1.7;
 }
 
-/* Vision Section */
+/* Vision Banner - Pop Art Shrine */
+.vision-banner {
+  padding: 0;
+  margin: 4rem 0;
+}
+
+.vision-banner-link {
+  display: block;
+  position: relative;
+  text-decoration: none;
+  overflow: hidden;
+  border-radius: 16px;
+  margin: 0 2rem;
+  border: 3px solid var(--green);
+  box-shadow: 0 0 40px rgba(0, 210, 106, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vision-banner-link:hover {
+  transform: scale(1.01);
+  box-shadow: 0 0 60px rgba(0, 210, 106, 0.4);
+}
+
+.pop-art-banner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100%;
+}
+
+.pop-banner-panel {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.pop-banner-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 20%;
+  filter: contrast(1.5) saturate(0) brightness(2.8);
+}
+
+.pop-banner-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  mix-blend-mode: multiply;
+  opacity: 0.35;
+}
+
+.pop-banner-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, transparent 30%, rgba(0,0,0,0.2) 30%);
+  background-size: 3px 3px;
+  z-index: 2;
+  opacity: 0.2;
+}
+
+.pop-banner-panel.pink::before { background: #ffb3c9; }
+.pop-banner-panel.cyan::before { background: #7eeaff; }
+.pop-banner-panel.yellow::before { background: #ffe566; }
+.pop-banner-panel.green::before { background: #66e8a8; }
+
+.vision-banner-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: rgba(13, 17, 23, 0.7);
+  z-index: 10;
+  transition: background 0.3s ease;
+}
+
+.vision-banner-link:hover .vision-banner-overlay {
+  background: rgba(13, 17, 23, 0.5);
+}
+
+.vision-banner-text {
+  font-size: clamp(1.5rem, 5vw, 3rem);
+  font-weight: 800;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.8);
+}
+
+.vision-banner-arrow {
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  color: var(--green);
+  transition: transform 0.3s ease;
+}
+
+.vision-banner-link:hover .vision-banner-arrow {
+  transform: translateX(10px);
+}
+
+@media (max-width: 768px) {
+  .pop-art-banner {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .vision-banner-link {
+    margin: 0 1rem;
+  }
+}
+
+/* Legacy vision styles kept for compatibility */
 .vision {
   padding: 6rem 2rem;
   text-align: center;

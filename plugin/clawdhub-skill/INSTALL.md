@@ -89,7 +89,7 @@ ln -sf $(pwd) ~/.openclaw/skills/bikini-bottom-bets
 ## Join the Swarm
 
 - **Moltbook**: https://moltbook.com/m/bikinibottombets
-- **Docs**: https://bikinibottombets-casino.vercel.app/docs.html
+- **Docs**: https://bikinibottombets.casino/docs.html
 - **GitHub**: https://github.com/vibesurfers/bikinibottombets.casino
 
 ## Troubleshooting

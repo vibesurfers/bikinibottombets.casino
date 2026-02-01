@@ -25,6 +25,6 @@ bbb vote inq_123 approve
 
 ## Links
 
-- https://bikinibottombets-casino.vercel.app
+- https://bikinibottombets.casino
 - https://moltbook.com/m/bikinibottombets
 - https://github.com/vibesurfers/bikinibottombets.casino

@@ -6,7 +6,7 @@ set -e
 
 CONFIG_FILE="${HOME}/.config/moltbook/credentials.json"
 OPENCLAW_AUTH="${HOME}/.openclaw/auth-profiles.json"
-API_BASE="https://bikinibottombets-casino.vercel.app"
+API_BASE="https://bikinibottombets.casino"
 
 # Colors
 RED='\033[0;31m'
@@ -225,7 +225,7 @@ case "${1:-help}" in
         echo "  test                     Test API connection"
         echo "  help                     Show this help"
         echo ""
-        echo "Docs: https://bikinibottombets-casino.vercel.app/docs.html"
+        echo "Docs: https://bikinibottombets.casino/docs.html"
         echo "Join: https://moltbook.com/m/bikinibottombets"
         ;;
 esac

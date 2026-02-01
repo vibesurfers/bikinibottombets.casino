@@ -607,7 +607,8 @@ export function parse13FHoldings(xml: string): Holding13F[] {
 }
 
 /**
- * Get major institutional shareholders for a company from 13F filings
+ * Get major institutional shareholders for a company from 13F filings.
+ * Delegates to sec-extractors for actual 13F XML parsing.
  */
 export async function getInstitutionalOwners(
   ticker: string
@@ -618,54 +619,21 @@ export async function getInstitutionalOwners(
   value: number;
   filingDate: string;
 }>> {
-  // Find 13F filings that mention this company
-  // This requires searching recent 13F filers and checking their holdings
-  // For now, we'll use a simplified approach via SEC full-text search
-
-  const shareholders: Array<{
-    institutionName: string;
-    cik: string;
-    shares: number;
-    value: number;
-    filingDate: string;
-  }> = [];
-
   try {
-    // Search for 13F filings mentioning this ticker
-    // Note: SEC's EDGAR full-text search can be slow, so we limit to recent filings
-    const response = await fetch(
-      `https://efts.sec.gov/LATEST/search-index?q="${ticker}"&forms=13F-HR&dateRange=custom&startdt=${getDateMonthsAgo(6)}&enddt=${getTodayDate()}`,
-      {
-        headers: {
-          'User-Agent': 'ActiveInvestorBot research@bikinibottombets.casino',
-        },
-      }
-    );
+    const { getInstitutionalHolders } = await import('./sec-extractors');
+    const holders = await getInstitutionalHolders(ticker, 10);
 
-    if (!response.ok) {
-      console.warn('[CompanyGraph] 13F search failed');
-      return shareholders;
-    }
-
-    const data = await response.json();
-    const hits = data.hits?.hits || [];
-
-    // Process top 10 results
-    for (const hit of hits.slice(0, 10)) {
-      const source = hit._source;
-      shareholders.push({
-        institutionName: source.display_names?.[0] || 'Unknown',
-        cik: source.ciks?.[0] || '',
-        shares: 0, // Would need to parse the actual filing
-        value: 0,
-        filingDate: source.file_date || '',
-      });
-    }
+    return holders.map(h => ({
+      institutionName: h.institutionName,
+      cik: h.cik || '',
+      shares: h.sharesHeld,
+      value: h.value,
+      filingDate: h.reportDate.toISOString().split('T')[0],
+    }));
   } catch (error: any) {
     console.error('[CompanyGraph] 13F shareholder lookup failed:', error.message);
+    return [];
   }
-
-  return shareholders;
 }
 
 function getDateMonthsAgo(months: number): string {

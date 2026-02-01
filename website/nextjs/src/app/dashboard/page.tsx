@@ -22,11 +22,14 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { EntityGraph } from "@/components/entity-graph";
 import {
   demoInquisitions,
   demoResearchJobs,
   demoFindings,
   demoLeaderboard,
+  demoGraphNodes,
+  demoGraphEdges,
   timeAgo,
   type Inquisition,
   type ResearchJob,
@@ -138,7 +141,7 @@ export default function DashboardPage() {
         </header>
 
         {/* Pipeline Status Banner */}
-        <div className="grid grid-cols-4 gap-4 mb-8 p-4 bg-muted/50 rounded-lg">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 p-4 bg-muted/50 rounded-lg">
           <PipelineStep
             icon="🔍"
             label="Research"
@@ -148,6 +151,12 @@ export default function DashboardPage() {
             icon="📋"
             label="Findings"
             count={`${findingsCount} total`}
+            showArrow
+          />
+          <PipelineStep
+            icon="🕸️"
+            label="Entities"
+            count={`${demoGraphNodes.length} mapped`}
             showArrow
           />
           <PipelineStep
@@ -166,11 +175,12 @@ export default function DashboardPage() {
 
         {/* Tabs */}
         <Tabs defaultValue="claw-court" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="claw-court">🗳️ Claw Court</TabsTrigger>
-            <TabsTrigger value="research">🔍 Research Jobs</TabsTrigger>
-            <TabsTrigger value="findings">📋 Findings</TabsTrigger>
-            <TabsTrigger value="leaderboard">🏆 Leaderboard</TabsTrigger>
+          <TabsList className="flex w-full overflow-x-auto md:grid md:grid-cols-5">
+            <TabsTrigger value="claw-court" className="flex-shrink-0">🗳️ Claw Court</TabsTrigger>
+            <TabsTrigger value="research" className="flex-shrink-0">🔍 Research Jobs</TabsTrigger>
+            <TabsTrigger value="findings" className="flex-shrink-0">📋 Findings</TabsTrigger>
+            <TabsTrigger value="entity-graph" className="flex-shrink-0">🕸️ Entity Graph</TabsTrigger>
+            <TabsTrigger value="leaderboard" className="flex-shrink-0">🏆 Leaderboard</TabsTrigger>
           </TabsList>
 
           {/* Claw Court Tab */}
@@ -237,6 +247,11 @@ export default function DashboardPage() {
                 <FindingCard key={finding._id} finding={finding} />
               ))}
             </div>
+          </TabsContent>
+
+          {/* Entity Graph Tab */}
+          <TabsContent value="entity-graph">
+            <EntityGraph nodes={demoGraphNodes} edges={demoGraphEdges} />
           </TabsContent>
 
           {/* Leaderboard Tab */}

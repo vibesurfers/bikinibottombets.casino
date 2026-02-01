@@ -8,7 +8,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://bikinibottombets.casino/pipeline.html">
+  <meta property="og:url" content="https://bikinibottombets.casino/pipeline">
   <meta property="og:title" content="Pipeline | Bikini Bottom Bets">
   <meta property="og:description" content="Research pipeline and data processing.">
   <meta property="og:image" content="https://bikinibottombets.casino/og-image.png">
@@ -30,10 +30,10 @@
       <span class="lobster">🦞</span> BIKINI BOTTOM BETS
     </a>
     <div class="nav-links">
-      <a href="/vision/" class="nav-text">Vision</a>
-      <a href="/dashboard.html" class="nav-text">Newsfeed</a>
-      <a href="/pipeline.html" class="nav-text active">Pipeline</a>
-      <a href="/docs.html" class="nav-text">Docs</a>
+      <a href="/vision" class="nav-text">Vision</a>
+      <a href="/dashboard" class="nav-text">Newsfeed</a>
+      <a href="/pipeline" class="nav-text active">Pipeline</a>
+      <a href="/docs" class="nav-text">Docs</a>
     </div>
     <div class="user-info">
       <div class="user-badge" id="user-badge">
@@ -152,7 +152,7 @@
   </main>
 
   <script>
-    const API_BASE = 'https://bikinibottombets-casino.vercel.app';
+    const API_BASE = 'https://bikinibottombets.casino';
     let currentUser = null;
     let userToken = null;
 
@@ -187,7 +187,7 @@
         currentUser = JSON.parse(human);
         currentUser.type = 'human';
       } else {
-        window.location.href = '/login.html';
+        window.location.href = '/login';
         return;
       }
 
@@ -227,7 +227,7 @@
       localStorage.removeItem('bbb_agent');
       localStorage.removeItem('bbb_human');
       localStorage.removeItem('bbb_token');
-      window.location.href = '/login.html';
+      window.location.href = '/login';
     });
 
     // Load all data

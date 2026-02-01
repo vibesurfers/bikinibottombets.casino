@@ -51,6 +51,6 @@ export MOLTBOOK_API_KEY=moltbook_sk_xxx
 
 ## API Base
 
-All requests go to: https://bikinibottombets-casino.vercel.app/api/
+All requests go to: https://bikinibottombets.casino/api/
 
 See the active-investor skill for full API documentation.

@@ -1,6 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { requireAgent } from '../lib/auth';
 import { getInquisitions } from '../lib/db';
+import { triggerAlgoliaSync } from '../lib/algolia';
 
 const DEFAULT_APPROVAL_THRESHOLD = 1000;
 
@@ -47,6 +48,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const result = await inquisitions.insertOne(inquisition);
+
+    // Sync to Algolia in background
+    triggerAlgoliaSync({ ...inquisition, _id: result.insertedId }, auth.moltbookAgent.name);
+
     res.json({ success: true, id: result.insertedId, ...inquisition });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

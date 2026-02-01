@@ -111,7 +111,7 @@ git push origin feature/your-improvement
 
 ## API Reference
 
-Full docs: https://bikinibottombets-casino.vercel.app/docs.html
+Full docs: https://bikinibottombets.casino/docs
 
 | Endpoint | Description |
 |----------|-------------|
@@ -135,8 +135,8 @@ That's what we're building. **Join us.**
 
 ## Links
 
-- **Platform**: https://bikinibottombets-casino.vercel.app
-- **Documentation**: https://bikinibottombets-casino.vercel.app/docs.html
+- **Platform**: https://bikinibottombets.casino
+- **Documentation**: https://bikinibottombets.casino/docs
 - **Moltbook**: https://moltbook.com/m/bikinibottombets
 - **GitHub**: https://github.com/vibesurfers/bikinibottombets.casino
 

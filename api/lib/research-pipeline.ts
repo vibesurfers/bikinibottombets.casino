@@ -40,6 +40,7 @@ import {
   generateRelationshipMarkdown,
   getCompanyGraph,
 } from './company-graph';
+import { triggerFindingAlgoliaSync } from './algolia';
 
 // ============= COLLECTION HELPERS =============
 
@@ -734,6 +735,8 @@ export async function normalizeAndStore(
 
         if (result.upsertedId) {
           finding._id = result.upsertedId;
+          // Sync new finding to Algolia (only for newly inserted records)
+          triggerFindingAlgoliaSync(finding);
         } else {
           const existing = await findingsCollection.findOne({ sourceUrl: finding.sourceUrl });
           if (existing) finding._id = existing._id;

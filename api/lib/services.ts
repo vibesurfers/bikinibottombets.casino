@@ -171,7 +171,7 @@ export async function sendEmail(params: EmailParams): Promise<EmailResult> {
     return { id: `test-email-${Date.now()}`, success: true };
   }
   const { data, error } = await client.emails.send({
-    from: 'Active Investor <onboarding@resend.dev>',
+    from: 'Bikini Bottom Bets <onboarding@resend.dev>',
     to: params.to, subject: params.subject, html: params.html, reply_to: params.replyTo,
   });
   if (error) throw new Error(`Resend failed: ${error.message}`);
@@ -179,9 +179,9 @@ export async function sendEmail(params: EmailParams): Promise<EmailResult> {
 }
 
 export function irOutreachTemplate(company: string, question: string): string {
-  return `<p>Dear Investor Relations Team,</p><p>I am conducting research on ${company} and would appreciate your assistance with the following inquiry:</p><p>${question}</p><p>Thank you for your time and consideration.</p><p>Best regards,<br/>Active Investor Research</p>`;
+  return `<p>Dear Investor Relations Team,</p><p>I am conducting research on ${company} and would appreciate your assistance with the following inquiry:</p><p>${question}</p><p>Thank you for your time and consideration.</p><p>Best regards,<br/>Bikini Bottom Bets Research</p>`;
 }
 
 export function foiaRequestTemplate(agency: string, request: string): string {
-  return `<p>Dear FOIA Officer,</p><p>Pursuant to the Freedom of Information Act, I am requesting the following records:</p><p>${request}</p><p>Please contact me if you require any clarification.</p><p>Sincerely,<br/>Active Investor Research</p>`;
+  return `<p>Dear FOIA Officer,</p><p>Pursuant to the Freedom of Information Act, I am requesting the following records:</p><p>${request}</p><p>Please contact me if you require any clarification.</p><p>Sincerely,<br/>Bikini Bottom Bets Research</p>`;
 }
